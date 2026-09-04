@@ -1,0 +1,56 @@
+{
+    "users":[
+        {
+            "id": "1",
+            "fullname": "Nguyen",
+            "email": "n123@gmail.com",
+            "password": "123"
+        },
+        {
+            "id": "2",
+            "fullname": "Quang",
+            "email": "q456@gmail.com",
+            "password": "123"
+        },
+        {
+            "id": "3",
+            "fullname": "Nam",
+            "email": "n789@gmail.com",
+            "password": "123"
+        }
+    ],
+    "categories":[
+        {
+            "id": "1",
+            "name": "Display & Router"
+        },
+        {
+            "id": "2",
+            "name": "Gaming Gear"
+        }
+    ],
+    "products":[
+        {
+            "id": "1",
+            "name": "ROG Azoth Extreme Edition 20",
+            "price": 19900000,
+            "categoryId": "2",
+            "description":
+            "The ROG Azoth Extreme Edition 20 is a customizable 75% gaming keyboard reimagined with exclusive design elements to celebrate 20 years of ROG innovation. It features a striking gold-on-black aesthetic, translucent keycaps, and refined ROG 20th anniversary details, including a 24K-gold-plated commemorative nameplate. Equipped with a full-color OLED touchscreen and a three-way control knob for intuitive adjustments, the Azoth Extreme Edition 20 delivers an 8000Hz report rate with the ROG Polling Rate Booster and also offers up to 1600 hours of battery life in 2.4GHz SpeedNova wireless mode. A carbon-fiber positioning plate, multi-layer dampening, and an adjustable gasket mount ensure crisp and refined typing experiences."
+        },
+        {
+            "id": "2",
+            "name": "Swift OLED PG27AQWP-G EDITION 20TH 27 inch",
+            "price": 39990000,
+            "categoryId": "1",
+            "description": "This 26.5-inch QHD OLED PG27AQWP-G Edition 20 boasts TrueBlack Glossy Tandem WOLED technology for 15% higher peak brightness, 25% larger color volume, and 60% longer OLED lifespan compared to previous-generation WOLED panels. The TrueBlack Glossy™ panel provides a zero-haze surface to ensure exceptional clarity and supersharp imagery. And to guard against panel burn-in, the PG27AQWP-G Edition 20 features ASUS OLED Care Pro technology with the Neo Proximity Sensor. Extensive connectivity options include HDMI"
+        },
+        {
+            "id": "3",
+            "name": "ROG HARPE II Extreme Edition 20",
+            "price": 8990000,
+            "categoryId": "2",
+            "description": "Honoring two decades of ROG excellence, the limited-edition ROG Harpe II Extreme Edition 20 gaming mouse builds on the Harpe II Ace's heritage. Featuring gold-plated accents and cutting-edge technologies, it stands as a tribute to the ROG legacy of precision and fine craftsmanship."
+        }
+    ]
+}
