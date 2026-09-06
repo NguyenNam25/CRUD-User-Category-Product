@@ -11,11 +11,35 @@ import {
 } from "@/components/ui/table";
 import UpdateCategory from "./UpdateCategory";
 import AlertDialogDelete from "../Components/AlertDialogDelete";
-import type { Category } from "@/types/category";
+import categoryApi from "@/api/Routes/categoryApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-export default function TableCategory({ data }: { data: Category[] }) {
-  const handleDeleteCategory = (id: number) => {
-    console.log("Delete category:", id);
+export default function TableCategory() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["categories"],
+    queryFn: categoryApi.getAllCategories,
+  })
+
+  const queryClient = useQueryClient();
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: categoryApi.deleteCategory,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["categories"],
+      });
+      toast.success("Delete successfully")
+    },
+
+    onError: (error) => {
+      toast.error("Delete failed")
+    }
+  })
+
+  const handleDeleteCategory = (id: string) => {
+    deleteCategoryMutation.mutate(id)
   };
 
   return (
@@ -28,9 +52,9 @@ export default function TableCategory({ data }: { data: Category[] }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((category) => (
-          <TableRow key={category.id}>
-            <TableCell>{category.id}</TableCell>
+        {data?.map((category) => (
+          <TableRow key={category.categoryId}>
+            <TableCell>{category.categoryId}</TableCell>
             <TableCell>{category.name}</TableCell>
             <TableCell>
               <div className="flex gap-2">

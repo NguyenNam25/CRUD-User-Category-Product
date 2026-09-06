@@ -1,5 +1,6 @@
 "use client";
 
+import userApi from "@/api/Routes/userApi";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -10,8 +11,10 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type LoginForm = {
   email: string;
@@ -24,11 +27,32 @@ export default function Login() {
     handleSubmit,
   } = useForm<LoginForm>()
 
+  const loginMutation = useMutation({
+    mutationFn: ({email, password}: {email: string, password: string}) => userApi.login(email, password),
+
+    onSuccess: (user) => {
+      console.log(`data from server: `,user)
+
+      sessionStorage.setItem("user", JSON.stringify(user));
+
+      toast.success("Login succesfully")
+
+      router.push("/")
+    },
+
+    onError: () => {
+      toast.error("Failed to login")
+    }
+  })
+
   const router = useRouter()
 
   const onSubmit = (data:LoginForm) => {
-    console.log(data)
-    router.push('/')
+    loginMutation.mutate({
+      email: data.email,
+      password: data.password,
+    })
+    // router.push('/')
   }
 
   return (

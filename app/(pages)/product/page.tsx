@@ -8,7 +8,7 @@ export default function Product() {
   return (
     <ListLayout>
       <ListHeaderLayout content="Product" AddComponent={<AddProduct />} />
-      <TableProduct data={products} />
+      <TableProduct />
     </ListLayout>
   );
 }

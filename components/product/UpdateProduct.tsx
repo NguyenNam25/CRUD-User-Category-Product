@@ -19,12 +19,17 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Product } from "@/types/product";
+import type { Product, ProductForm } from "@/types/product";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import productApi from "@/api/Routes/productApi";
 
 export default function UpdateProduct({ data }: { data: Product }) {
+  const [open, setOpen] = useState(false);
+
   const { register, handleSubmit, reset } = useForm<Product>({
     defaultValues: {
       name: data.name,
@@ -34,17 +39,40 @@ export default function UpdateProduct({ data }: { data: Product }) {
     },
   });
 
-  const onUpdate = (data: Product) => {
-    try {
-      console.log(data);
-      toast.success("User updated succesfully");
-    } catch (error) {
-      toast.error("Failed to update User");
+  const queryClient = useQueryClient();
+
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, product }: { id: string; product: ProductForm }) => productApi.updateProduct(id, product),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"]
+      });
+      toast.success("Product updated successfully");
+      setOpen(false);
+    },
+
+    onError: () => {
+      toast.error("Failed to update category")
     }
+  })
+
+  const onUpdate = (formData: Product) => {
+    console.log(formData)
+    updateProductMutation.mutate({
+      id: data.id,
+      product: {
+        productId: data.productId,
+        name: formData.name,
+        price: formData.price,
+        categoryId: formData.categoryId,
+        description: formData.description,
+      }
+    })
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
         Update
       </DialogTrigger>
@@ -62,18 +90,18 @@ export default function UpdateProduct({ data }: { data: Product }) {
             <Field>
               <FieldLabel htmlFor="price">Price</FieldLabel>
               <Input
-                {...register("price")}
+                {...register("price", {valueAsNumber:true})}
                 id="price"
-                type="price"
+                type="number"
                 placeholder="example@gmail.com"
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="categoryId">Category</FieldLabel>
               <Input
-                {...register("categoryId")}
+                {...register("categoryId", {valueAsNumber:true})}
                 id="categoryId"
-                type="text"
+                type="number"
                 placeholder="Enter Password"
               />
             </Field>
@@ -87,7 +115,15 @@ export default function UpdateProduct({ data }: { data: Product }) {
               />
             </Field>
             <div className="flex justify-end">
-              <Button type="reset">Reset</Button>
+              <Button type="button"
+                onClick={() =>
+                  reset({
+                    name: data.name,
+                    price: data.price,
+                    categoryId: data.categoryId,
+                    description: data.description,
+                  })
+                }>Reset</Button>
               <Button type="submit">Submit</Button>
             </div>
           </FieldGroup>

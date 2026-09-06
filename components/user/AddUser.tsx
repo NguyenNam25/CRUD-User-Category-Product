@@ -14,22 +14,41 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { User } from "@/types/user";
+import type { User, UserForm } from "@/types/user";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import userApi from "@/api/Routes/userApi";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<User>();
 
-  const onSubmit = (data: User) => {
-    try {
-      console.log(data);
-      toast.success("User added successfully");
+  const queryClient = useQueryClient();
+
+  const addUserMutation = useMutation({
+    mutationFn: userApi.createUser,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey:["users"]
+      })
+      toast.success("Create succesfully")
       reset();
-      setOpen(false);
-    } catch (error) {
-      toast.error("Failed to add user");
+      setOpen(false)
+    },
+
+    onError: (error) => {
+      toast.error("Create failed")
     }
+  })
+
+  const onSubmit = (data: UserForm) => {
+    addUserMutation.mutate({
+      userId: data.userId,
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    })
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -46,10 +65,10 @@ export default function AddUser() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
+              <FieldLabel htmlFor="userId">ID</FieldLabel>
               <Input
-                {...register("id")}
-                id="id"
+                {...register("userId", {valueAsNumber:true})}
+                id="userId"
                 type="number"
                 placeholder="id"
               />

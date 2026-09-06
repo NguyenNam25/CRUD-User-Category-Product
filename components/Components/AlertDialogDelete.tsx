@@ -15,9 +15,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 type AlertDialogDelete = {
-  id: number;
+  id: string;
   type: "category" | "product" | "user";
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function AlertDialogDelete({

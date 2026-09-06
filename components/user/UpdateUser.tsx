@@ -19,11 +19,16 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { User } from "@/types/user";
+import type { User, UserForm } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import userApi from "@/api/Routes/userApi";
+import { useState } from "react";
 
 export default function UpdateUser({ data }: { data: User }) {
+  const [open, setOpen] = useState(false)
+
   const { register, handleSubmit, reset } = useForm<User>({
     defaultValues: {
       fullname: data.fullname,
@@ -32,16 +37,35 @@ export default function UpdateUser({ data }: { data: User }) {
     },
   });
 
-  const onUpdate = (data: User) => {
-    try {
-      console.log(data);
-      toast.success("User updated succesfully");
-    } catch (error) {
-      toast.error("Failed to update User");
+  const queryClient = useQueryClient();
+
+  const updateUserMutation = useMutation({
+    mutationFn: ({ id, user }: { id: string; user: UserForm }) => userApi.updateUser(id, user),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"]
+      })
+      toast.success("Update successfully")
+      setOpen(false)
     }
+  })
+
+  const onUpdate = (formdata: User) => {
+    updateUserMutation.mutate({
+      id: data.id,
+      user: {
+        userId: data.userId,
+        fullname: formdata.fullname,
+        email: formdata.email,
+        password: formdata.password,
+      }
+
+    })
   };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
         Update
       </DialogTrigger>

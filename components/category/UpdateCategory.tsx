@@ -19,28 +19,52 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Category } from "@/types/category";
+import type { Category, CategoryForm } from "@/types/category";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import categoryApi from "@/api/Routes/categoryApi";
+import { useState } from "react";
 
-export default function UpdateCategory({data}: {data:Category}) {
+export default function UpdateCategory({ data }: { data: Category }) {
+  const [open, setOpen] = useState(false);
+
   const { register, handleSubmit, reset } = useForm<Category>({
     defaultValues: {
-        name: data.name
+      name: data.name
     }
   });
 
-  const onUpdate = (data: Category) => {
-    try {
-      console.log(data);
-      toast.success("Category updated succesfully")
-    } catch (error) {
-        toast.error("Failed to update category")
+  const queryClient = useQueryClient();
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, category }: { id: string; category: CategoryForm }) => categoryApi.updateCategory(id, category),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["categories"]
+      });
+      toast.success("Category added successfully");
+      setOpen(false);
+    },
+
+    onError: () => {
+      toast.error("Failed to add category")
     }
+  })
+
+  const onUpdate = (formData: Category) => {
+    updateCategoryMutation.mutate({
+      id: data.id,
+      category: {
+        categoryId: data.categoryId,
+        name: formData.name
+      }
+    })
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
         Update
       </DialogTrigger>
@@ -60,7 +84,7 @@ export default function UpdateCategory({data}: {data:Category}) {
               />
             </Field>
             <div className="flex justify-end">
-              <Button type="button" onClick={() => reset({name:data.name})}>Reset</Button>
+              <Button type="button" onClick={() => reset({ name: data.name })}>Reset</Button>
               <Button type="submit">Submit</Button>
             </div>
           </FieldGroup>

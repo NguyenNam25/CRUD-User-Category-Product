@@ -8,7 +8,7 @@ export default function User() {
   return (
     <ListLayout>
       <ListHeaderLayout content="User" AddComponent={<AddUser />} />
-      <TableUser data={users} />
+      <TableUser />
     </ListLayout>
   );
 }

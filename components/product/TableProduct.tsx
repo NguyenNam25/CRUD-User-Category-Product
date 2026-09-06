@@ -13,10 +13,35 @@ import AlertDialogDelete from "../Components/AlertDialogDelete";
 import UpdateUser from "./UpdateProduct";
 import { Product } from "@/types/product";
 import { categories } from "@/data/categories";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import productApi from "@/api/Routes/productApi";
+import { toast } from "sonner";
 
-export default function TableProduct({ data }: { data: Product[] }) {
-  const handleDeleteProduct = (id: number) => {
-    console.log("Delete product:", id);
+export default function TableProduct() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["products"],
+    queryFn: productApi.getAllProducts,
+  })
+
+  const queryClient = useQueryClient();
+  
+  const deleteProductMutation = useMutation ({
+    mutationFn: productApi.deleteProduct,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      toast.success("Delete successfully")
+    },
+
+    onError: (error) => {
+      toast.error("Delete failed")
+    }
+  })
+
+  const handleDeleteProduct = (id: string) => {
+    deleteProductMutation.mutate(id)
   };
 
   return (
@@ -32,17 +57,13 @@ export default function TableProduct({ data }: { data: Product[] }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((product) => (
-          <TableRow key={product.id}>
-            <TableCell>{product.id}</TableCell>
+        {data?.map((product) => (
+          <TableRow key={product.productId}>
+            <TableCell>{product.productId}</TableCell>
             <TableCell>{product.name}</TableCell>
             <TableCell>{product.price}</TableCell>
             <TableCell>
-              {
-                categories.find(
-                  (category) => category.id === product.categoryId,
-                )?.name
-              }
+              {product.category?.name}
             </TableCell>
             <TableCell className="max-w-75 whitespace-normal wrap-break-word">
               {product.description}

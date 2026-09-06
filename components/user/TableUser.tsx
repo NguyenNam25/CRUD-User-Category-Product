@@ -12,10 +12,35 @@ import {
 import type { User } from "@/types/user";
 import AlertDialogDelete from "../Components/AlertDialogDelete";
 import UpdateUser from "./UpdateUser";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import userApi from "@/api/Routes/userApi";
+import { toast } from "sonner";
 
-export default function TableUser({ data }: { data: User[] }) {
-  const handleDeleteUser = (id: number) => {
-    console.log("Delete user:", id);
+export default function TableUser() {
+  const {data, isLoading, isError} = useQuery({
+    queryKey:["users"],
+    queryFn: userApi.getAllUsers
+  })
+
+  const queryClient = useQueryClient();
+
+  const deleteUserMutation = useMutation({
+    mutationFn: userApi.deleteUser,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"]
+      });
+      toast.success("Deleted succesfully")
+    },
+
+    onError: (error) => {
+      toast.error("Deleted failed")
+    }
+  })
+
+  const handleDeleteUser = (id: string) => {
+    deleteUserMutation.mutate(id)
   };
 
   return (
@@ -30,9 +55,9 @@ export default function TableUser({ data }: { data: User[] }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell>{user.id}</TableCell>
+        {data?.map((user) => (
+          <TableRow key={user.userId}>
+            <TableCell>{user.userId}</TableCell>
             <TableCell>{user.fullname}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.password}</TableCell>

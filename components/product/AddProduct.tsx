@@ -14,23 +14,43 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { Product } from "@/types/product";
+import type { Product, ProductForm } from "@/types/product";
 import { Textarea } from "../ui/textarea";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import productApi from "@/api/Routes/productApi";
 
 export default function AddProduct() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<Product>();
+  const { register, handleSubmit, reset } = useForm<ProductForm>();
 
-  const onSubmit = (data: Product) => {
-    try {
-      console.log(data);
-      toast.success("User added successfully");
+  const queryClient = useQueryClient();
+
+  const createProductMutation = useMutation({
+    mutationFn: productApi.createProduct,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"]
+      });
+      toast.success("Product add succesfully")
       reset();
-      setOpen(false);
-    } catch (error) {
-      toast.error("Failed to add user");
+      setOpen(false)
+    },
+
+    onError: (error) => {
+      toast.error("Failed to add new product")
     }
+  })
+
+  const onSubmit = (data: ProductForm) => {
+    createProductMutation.mutate({
+      productId: data.productId,
+      name: data.name,
+      price: data.price,
+      categoryId: data.categoryId,
+      description: data.description
+    })
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -47,10 +67,10 @@ export default function AddProduct() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
+              <FieldLabel htmlFor="productId">ID</FieldLabel>
               <Input
-                {...register("id")}
-                id="id"
+                {...register("productId", {valueAsNumber: true})}
+                id="productId"
                 type="number"
                 placeholder="id"
               />
@@ -62,7 +82,7 @@ export default function AddProduct() {
             <Field>
               <FieldLabel htmlFor="price">Price</FieldLabel>
               <Input
-                {...register("price")}
+                {...register("price", {valueAsNumber: true})}
                 id="price"
                 type="number"
                 placeholder="example@gmail.com"

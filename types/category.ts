@@ -1,4 +1,10 @@
 export interface Category {
-  id: number,
+  id: string,
+  categoryId: number,
+  name: string
+}
+
+export interface CategoryForm {
+  categoryId: number,
   name: string
 }

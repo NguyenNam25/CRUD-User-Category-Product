@@ -18,22 +18,39 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { Category } from "@/types/category";
+import type { CategoryForm } from "@/types/category";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import categoryApi from "@/api/Routes/categoryApi";
 
 export default function AddCategory() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<Category>();
+  const { register, handleSubmit, reset } = useForm<CategoryForm>();
 
-  const onSubmit = (data: Category) => {
-    try {
-      console.log(data);
+  const queryClient = useQueryClient();
+
+  const createCategoryMutation = useMutation({
+    mutationFn: categoryApi.createCategory,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["categories"]
+      });
       toast.success("Category added successfully");
       reset();
       setOpen(false);
-    } catch (error) {
-      toast.error("Failed to add category");
+    },
+
+    onError: () => {
+      toast.error("Failed to add category")
     }
+  })
+
+  const onSubmit = (data: CategoryForm) => {
+    createCategoryMutation.mutate({
+      categoryId: data.categoryId,
+      name: data.name
+    })
   };
 
   return (
@@ -51,10 +68,10 @@ export default function AddCategory() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
+              <FieldLabel htmlFor="categoryId">ID</FieldLabel>
               <Input
-                {...register("id")}
-                id="id"
+                {...register("categoryId", {valueAsNumber: true})}
+                id="categoryId"
                 type="number"
                 placeholder="id"
               />
