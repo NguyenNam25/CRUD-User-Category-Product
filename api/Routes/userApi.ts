@@ -40,8 +40,18 @@ const userApi = {
     },
     login: async (email: string, password: string): Promise<User> => {
         try {
-            const response = await axiosClient.get(`/users?email=${email}&password=${password}`)
-            return response.data
+            const response = await axiosClient.get(`/users?email=${email}`)
+
+            const user = response.data.find(
+                (user: User) => user.password === password
+            )
+
+            if (!user) {
+                throw new Error("Email hoặc password không đúng");
+            }
+
+            return user;
+
         } catch (error) {
             console.error(`Error login`, error);
             throw error;

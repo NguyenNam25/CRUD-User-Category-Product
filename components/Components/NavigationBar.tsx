@@ -8,7 +8,18 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useEffect, useState } from "react";
+import type { User } from "@/types/user";
+import { useAuth } from "../auth/AuthContext";
 
 const menus = [
   { text: "Home", href: "/" },
@@ -18,22 +29,10 @@ const menus = [
 ];
 
 export default function NavigationBar() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading,setIsLoading] = useState(true)
+  const { currentUser, isLoading, logout } = useAuth();
 
-  useEffect(() => {
-    const user = sessionStorage.getItem("user")
-
-    if (user) {
-      setCurrentUser(JSON.parse(user))
-    }
-
-    setIsLoading(false)
-  }, [])
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("user");
-    setCurrentUser(null);
+  if(isLoading){
+    return null;
   }
 
   return (
@@ -48,25 +47,34 @@ export default function NavigationBar() {
             </NavigationMenuLink>
           </NavigationMenuItem>
         ))}
-        {!isLoading && (currentUser?(
+        {currentUser ? (
           <NavigationMenuItem
-          key={"/"}
-          className="ml-auto"
-        >
-          <NavigationMenuLink onClick={handleLogout}  href={"/"} className="text-xl">
-            Logout
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        ):(
+            key={"/"}
+            className="ml-auto"
+          >
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-xl">
+                {currentUser.fullname}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={logout}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </NavigationMenuItem>
+        ) : (
           <NavigationMenuItem
-          key={"/login"}
-          className="ml-auto"
-        >
-          <NavigationMenuLink href={"/login"} className="text-xl">
-            Login
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        ))}
+            key={"/login"}
+            className="ml-auto"
+          >
+            <NavigationMenuLink href={"/login"} className="text-xl">
+              Login
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   )

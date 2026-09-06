@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner"
-import "./globals.css";
+import "@/app/globals.css";
 import NavigationBar from "@/components/Components/NavigationBar";
 import Providers from "./providers";
+import AppContent from "@/components/Components/AppContent";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   
@@ -10,8 +11,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <Providers>
-          <NavigationBar />
-          {children}
+          <AppContent>
+            {children}
+          </AppContent>
           <Toaster />
         </Providers>
       </body>

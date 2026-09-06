@@ -1,6 +1,7 @@
 "use client";
 
 import userApi from "@/api/Routes/userApi";
+import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -27,13 +28,15 @@ export default function Login() {
     handleSubmit,
   } = useForm<LoginForm>()
 
+  const {login} = useAuth();
+
   const loginMutation = useMutation({
-    mutationFn: ({email, password}: {email: string, password: string}) => userApi.login(email, password),
+    mutationFn: ({ email, password }: { email: string, password: string }) => userApi.login(email, password),
 
     onSuccess: (user) => {
-      console.log(`data from server: `,user)
 
-      sessionStorage.setItem("user", JSON.stringify(user));
+      login(user);
+      // window.dispatchEvent(new Event("userLogin"));
 
       toast.success("Login succesfully")
 
@@ -47,7 +50,7 @@ export default function Login() {
 
   const router = useRouter()
 
-  const onSubmit = (data:LoginForm) => {
+  const onSubmit = (data: LoginForm) => {
     loginMutation.mutate({
       email: data.email,
       password: data.password,
@@ -68,7 +71,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="email@example.com"
-                // required
+              // required
               />
             </Field>
 
@@ -79,7 +82,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                // required
+              // required
               />
             </Field>
 

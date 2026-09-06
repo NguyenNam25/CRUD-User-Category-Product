@@ -30,7 +30,7 @@ export default function AddUser() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey:["users"]
+        queryKey: ["users"]
       })
       toast.success("Create succesfully")
       reset();
@@ -42,7 +42,18 @@ export default function AddUser() {
     }
   })
 
-  const onSubmit = (data: UserForm) => {
+  const onSubmit = async (data: UserForm) => {
+    const users = await userApi.getAllUsers();
+
+    const exists = users.some(
+      (user) => user.userId === data.userId
+    );
+
+    if (exists) {
+      toast.error("User ID already exists");
+      return;
+    }
+
     addUserMutation.mutate({
       userId: data.userId,
       fullname: data.fullname,
@@ -50,6 +61,7 @@ export default function AddUser() {
       password: data.password,
     })
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
@@ -67,37 +79,60 @@ export default function AddUser() {
             <Field>
               <FieldLabel htmlFor="userId">ID</FieldLabel>
               <Input
-                {...register("userId", {valueAsNumber:true})}
+                {...register("userId", { valueAsNumber: true, min: { value: 1, message: "value must greater than 1" } })}
                 id="userId"
                 type="number"
                 placeholder="id"
+                required
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
               <Input
-                {...register("fullname")}
+                {...register("fullname", {
+                  minLength: {
+                    value: 1,
+                    message: "Full Name must contain at least 1 character",
+                  },
+                })}
                 id="fullname"
                 type="text"
                 placeholder="Enter Full Name"
+                required
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
-                {...register("email")}
+                {...register("email", {
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "invalid email ",
+                  },
+                })}
                 id="email"
                 type="email"
                 placeholder="example@gmail.com"
+                required
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
-                {...register("password")}
+                {...register("password", {
+                  minLength: {
+                    value: 6,
+                    message: "Password must contain at least 6 character",
+                  },
+                  pattern: {
+                    value: /[A-Za-z]/,
+                    message: "Password must contain at least 1 character",
+                  },
+                })}
                 id="password"
                 type="text"
                 placeholder="Enter Password"
+                required
               />
             </Field>
             <div className="flex justify-end">

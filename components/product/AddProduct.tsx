@@ -43,7 +43,18 @@ export default function AddProduct() {
     }
   })
 
-  const onSubmit = (data: ProductForm) => {
+  const onSubmit = async (data: ProductForm) => {
+    const products = await productApi.getAllProducts();
+
+    const exists = products.some(
+      (product) => product.productId === data.productId
+    );
+
+    if (exists) {
+      toast.error("User ID already exists");
+      return;
+    }
+
     createProductMutation.mutate({
       productId: data.productId,
       name: data.name,
@@ -69,20 +80,21 @@ export default function AddProduct() {
             <Field>
               <FieldLabel htmlFor="productId">ID</FieldLabel>
               <Input
-                {...register("productId", {valueAsNumber: true})}
+                {...register("productId", { valueAsNumber: true, min: { value: 1, message: "value must greater than 1" } })}
                 id="productId"
                 type="number"
                 placeholder="id"
+                required
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="name">Product Name</FieldLabel>
-              <Input {...register("name")} id="name" type="text" />
+              <Input {...register("name")} id="name" type="text" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="price">Price</FieldLabel>
               <Input
-                {...register("price", {valueAsNumber: true})}
+                {...register("price", { valueAsNumber: true })}
                 id="price"
                 type="number"
                 placeholder="example@gmail.com"

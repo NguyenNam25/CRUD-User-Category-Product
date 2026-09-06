@@ -46,7 +46,18 @@ export default function AddCategory() {
     }
   })
 
-  const onSubmit = (data: CategoryForm) => {
+  const onSubmit = async (data: CategoryForm) => {
+    const categories = await categoryApi.getAllCategories();
+
+    const exists = categories.some(
+        (category) => category.categoryId === data.categoryId
+    );
+
+    if (exists) {
+        toast.error("Category ID already exists");
+        return;
+    }
+
     createCategoryMutation.mutate({
       categoryId: data.categoryId,
       name: data.name
@@ -62,18 +73,19 @@ export default function AddCategory() {
       </DialogTrigger>
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
-          <DialogTitle>New User</DialogTitle>
-          <DialogDescription>Add new user</DialogDescription>
+          <DialogTitle>New Category</DialogTitle>
+          <DialogDescription>Add new category</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="categoryId">ID</FieldLabel>
               <Input
-                {...register("categoryId", {valueAsNumber: true})}
+                {...register("categoryId", { valueAsNumber: true, min: { value: 1, message: "must greater than 0" } })}
                 id="categoryId"
                 type="number"
                 placeholder="id"
+                required
               />
             </Field>
             <Field>
@@ -83,6 +95,7 @@ export default function AddCategory() {
                 id="name"
                 type="text"
                 placeholder="name"
+                required
               />
             </Field>
             <div className="flex justify-end">
