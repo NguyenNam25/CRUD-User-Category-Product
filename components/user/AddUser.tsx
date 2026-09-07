@@ -17,6 +17,8 @@ import { useState } from "react";
 import type { User } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
+import { userSchema } from "@/schemas/userSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
@@ -26,7 +28,9 @@ export default function AddUser() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<User>();
+  } = useForm<User>({
+    resolver: zodResolver(userSchema),
+  });
 
   const queryClient = useQueryClient();
 
@@ -83,44 +87,35 @@ export default function AddUser() {
             <Field>
               <FieldLabel htmlFor="id">ID</FieldLabel>
               <Input
-                {...register("id", {
-                  valueAsNumber: true,
-                  min: { value: 1, message: "value must greater than 1" },
-                })}
+                {...register("id", { valueAsNumber: true })}
                 id="id"
                 type="number"
                 placeholder="id"
-                required
               />
+              {errors.id && (
+                <p className="text-red-500 text-sm">{errors.id.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
               <Input
-                {...register("fullname", {
-                  minLength: {
-                    value: 1,
-                    message: "Full Name must contain at least 1 character",
-                  },
-                })}
+                {...register("fullname")}
                 id="fullname"
                 type="text"
                 placeholder="Enter Full Name"
-                required
               />
+
+              {errors.fullname && (
+                <p className="text-red-500 text-sm">{errors.fullname.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
-                {...register("email", {
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "invalid email ",
-                  },
-                })}
+                {...register("email")}
                 id="email"
                 type="email"
                 placeholder="example@gmail.com"
-                required
               />
               {errors.email && (
                 <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -129,23 +124,15 @@ export default function AddUser() {
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
-                {...register("password", {
-                  minLength: {
-                    value: 6,
-                    message: "Password must contain at least 6 character",
-                  },
-                  pattern: {
-                    value: /[A-Za-z]/,
-                    message: "Password must contain at least 1 character",
-                  },
-                })}
+                {...register("password")}
                 id="password"
                 type="text"
                 placeholder="Enter Password"
-                required
               />
               {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
               )}
             </Field>
             <div className="flex justify-end">

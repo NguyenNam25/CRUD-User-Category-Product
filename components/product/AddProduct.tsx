@@ -19,14 +19,23 @@ import { Textarea } from "../ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
 import CategorySelect from "./CategorySelect";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "@/schemas/productSchema";
 
 export default function AddProduct() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset, control } = useForm<Product>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors },
+  } = useForm<Product>({
     defaultValues: {
       categoryId: 0,
     },
+    resolver: zodResolver(productSchema),
   });
 
   const queryClient = useQueryClient();
@@ -49,12 +58,10 @@ export default function AddProduct() {
   });
 
   const onSubmit = async (data: Product) => {
-    console.log(data)
+    console.log(data);
     const products = await productApi.getAllProducts();
 
-    const exists = products.some(
-      (product) => product.id === data.id,
-    );
+    const exists = products.some((product) => product.id === data.id);
 
     if (exists) {
       toast.error("product ID already exists");
@@ -86,19 +93,21 @@ export default function AddProduct() {
             <Field>
               <FieldLabel htmlFor="id">ID</FieldLabel>
               <Input
-                {...register("id", {
-                  valueAsNumber: true,
-                  min: { value: 1, message: "value must greater than 1" },
-                })}
+                {...register("id", { valueAsNumber: true })}
                 id="id"
                 type="number"
                 placeholder="id"
-                required
               />
+              {errors.id && (
+                <p className="text-red-500 text-sm">{errors.id.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="name">Product Name</FieldLabel>
               <Input {...register("name")} id="name" type="text" required />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="price">Price</FieldLabel>
@@ -107,10 +116,13 @@ export default function AddProduct() {
                 id="price"
                 type="number"
               />
+              {errors.price && (
+                <p className="text-red-500 text-sm">{errors.price.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="categoryId">Category</FieldLabel>
-              <CategorySelect control={control}/>
+              <CategorySelect control={control} />
             </Field>
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
