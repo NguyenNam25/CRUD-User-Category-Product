@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { User } from "@/types/user";
 import AlertDialogDelete from "../Components/AlertDialogDelete";
 import UpdateUser from "./UpdateUser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -39,7 +38,7 @@ export default function TableUser() {
     }
   })
 
-  const handleDeleteUser = (id: string) => {
+  const handleDeleteUser = (id: number) => {
     deleteUserMutation.mutate(id)
   };
 
@@ -56,8 +55,8 @@ export default function TableUser() {
       </TableHeader>
       <TableBody>
         {data?.map((user) => (
-          <TableRow key={user.userId}>
-            <TableCell>{user.userId}</TableCell>
+          <TableRow key={user.id}>
+            <TableCell>{user.id}</TableCell>
             <TableCell>{user.fullname}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>{user.password}</TableCell>

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { Product, ProductForm } from "@/types/product";
+import type { Product } from "@/types/product";
 import { Textarea } from "../ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
@@ -23,7 +23,7 @@ import CategorySelect from "./CategorySelect";
 export default function AddProduct() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
+  const { register, handleSubmit, reset, control } = useForm<Product>({
     defaultValues: {
       categoryId: 0,
     },
@@ -48,20 +48,21 @@ export default function AddProduct() {
     },
   });
 
-  const onSubmit = async (data: ProductForm) => {
+  const onSubmit = async (data: Product) => {
+    console.log(data)
     const products = await productApi.getAllProducts();
 
     const exists = products.some(
-      (product) => product.productId === data.productId,
+      (product) => product.id === data.id,
     );
 
     if (exists) {
-      toast.error("User ID already exists");
+      toast.error("product ID already exists");
       return;
     }
 
     createProductMutation.mutate({
-      productId: data.productId,
+      id: data.id,
       name: data.name,
       price: data.price,
       categoryId: data.categoryId,
@@ -83,13 +84,13 @@ export default function AddProduct() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="productId">ID</FieldLabel>
+              <FieldLabel htmlFor="id">ID</FieldLabel>
               <Input
-                {...register("productId", {
+                {...register("id", {
                   valueAsNumber: true,
                   min: { value: 1, message: "value must greater than 1" },
                 })}
-                id="productId"
+                id="id"
                 type="number"
                 placeholder="id"
                 required

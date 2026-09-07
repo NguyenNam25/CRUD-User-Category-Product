@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Category, CategoryForm } from "@/types/category";
+import type { Category } from "@/types/category";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ export default function UpdateCategory({ data }: { data: Category }) {
   const queryClient = useQueryClient();
 
   const updateCategoryMutation = useMutation({
-    mutationFn: ({ id, category }: { id: string; category: CategoryForm }) => categoryApi.updateCategory(id, category),
+    mutationFn: ({ id, category }: { id: number; category: Category }) => categoryApi.updateCategory(id, category),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -57,7 +57,7 @@ export default function UpdateCategory({ data }: { data: Category }) {
     updateCategoryMutation.mutate({
       id: data.id,
       category: {
-        categoryId: data.categoryId,
+        id: data.id,
         name: formData.name
       }
     })

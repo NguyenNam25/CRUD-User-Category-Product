@@ -38,7 +38,7 @@ export default function TableProduct() {
     }
   })
 
-  const handleDeleteProduct = (id: string) => {
+  const handleDeleteProduct = (id: number) => {
     deleteProductMutation.mutate(id)
   };
 
@@ -56,8 +56,8 @@ export default function TableProduct() {
       </TableHeader>
       <TableBody>
         {data?.map((product) => (
-          <TableRow key={product.productId}>
-            <TableCell>{product.productId}</TableCell>
+          <TableRow key={product.id}>
+            <TableCell>{product.id}</TableCell>
             <TableCell>{product.name}</TableCell>
             <TableCell>{product.price}</TableCell>
             <TableCell>

@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { CategoryForm } from "@/types/category";
+import type { Category } from "@/types/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
 
@@ -26,7 +26,7 @@ import categoryApi from "@/api/Routes/categoryApi";
 export default function AddCategory() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<CategoryForm>();
+  const { register, handleSubmit, reset } = useForm<Category>();
 
   const queryClient = useQueryClient();
 
@@ -47,11 +47,11 @@ export default function AddCategory() {
     }
   })
 
-  const onSubmit = async (data: CategoryForm) => {
+  const onSubmit = async (data: Category) => {
     const categories = await categoryApi.getAllCategories();
 
     const exists = categories.some(
-        (category) => category.categoryId === data.categoryId
+        (category) => category.id === data.id
     );
 
     if (exists) {
@@ -60,7 +60,7 @@ export default function AddCategory() {
     }
 
     createCategoryMutation.mutate({
-      categoryId: data.categoryId,
+      id: data.id,
       name: data.name
     })
   };
@@ -80,10 +80,10 @@ export default function AddCategory() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="categoryId">ID</FieldLabel>
+              <FieldLabel htmlFor="id">ID</FieldLabel>
               <Input
-                {...register("categoryId", { valueAsNumber: true, min: { value: 1, message: "must greater than 0" } })}
-                id="categoryId"
+                {...register("id", { valueAsNumber: true, min: { value: 1, message: "must greater than 0" } })}
+                id="id"
                 type="number"
                 placeholder="id"
                 required

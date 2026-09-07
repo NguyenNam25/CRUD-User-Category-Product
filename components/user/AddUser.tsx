@@ -14,14 +14,19 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { User, UserForm } from "@/types/user";
+import type { User } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<User>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<User>();
 
   const queryClient = useQueryClient();
 
@@ -30,24 +35,23 @@ export default function AddUser() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["users"]
-      })
-      toast.success("Create succesfully")
+        queryKey: ["users"],
+      });
+      toast.success("Create succesfully");
       reset();
-      setOpen(false)
+      setOpen(false);
     },
 
     onError: (error) => {
-      toast.error("Create failed")
-    }
-  })
+      toast.error("Create failed");
+    },
+  });
 
-  const onSubmit = async (data: UserForm) => {
+  const onSubmit = async (data: User) => {
+    console.log(data);
     const users = await userApi.getAllUsers();
 
-    const exists = users.some(
-      (user) => user.userId === data.userId
-    );
+    const exists = users.some((user) => user.id === data.id);
 
     if (exists) {
       toast.error("User ID already exists");
@@ -55,11 +59,11 @@ export default function AddUser() {
     }
 
     addUserMutation.mutate({
-      userId: data.userId,
+      id: data.id,
       fullname: data.fullname,
       email: data.email,
       password: data.password,
-    })
+    });
   };
 
   return (
@@ -77,10 +81,13 @@ export default function AddUser() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="userId">ID</FieldLabel>
+              <FieldLabel htmlFor="id">ID</FieldLabel>
               <Input
-                {...register("userId", { valueAsNumber: true, min: { value: 1, message: "value must greater than 1" } })}
-                id="userId"
+                {...register("id", {
+                  valueAsNumber: true,
+                  min: { value: 1, message: "value must greater than 1" },
+                })}
+                id="id"
                 type="number"
                 placeholder="id"
                 required
@@ -115,6 +122,9 @@ export default function AddUser() {
                 placeholder="example@gmail.com"
                 required
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
             </Field>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -134,9 +144,14 @@ export default function AddUser() {
                 placeholder="Enter Password"
                 required
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password.message}</p>
+              )}
             </Field>
             <div className="flex justify-end">
-              <Button type="reset">Reset</Button>
+              <Button type="button" onClick={() => reset()}>
+                Reset
+              </Button>
               <Button type="submit">Submit</Button>
             </div>
           </FieldGroup>

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Product, ProductForm } from "@/types/product";
+import type { Product } from "@/types/product";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
@@ -31,7 +31,7 @@ import CategorySelect from "./CategorySelect";
 export default function UpdateProduct({ data }: { data: Product }) {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
+  const { register, handleSubmit, reset, control } = useForm<Product>({
     defaultValues: {
       name: data.name,
       price: data.price,
@@ -43,7 +43,7 @@ export default function UpdateProduct({ data }: { data: Product }) {
   const queryClient = useQueryClient();
 
   const updateProductMutation = useMutation({
-    mutationFn: ({ id, product }: { id: string; product: ProductForm }) => productApi.updateProduct(id, product),
+    mutationFn: ({ id, product }: { id: number; product: Product }) => productApi.updateProduct(id, product),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -58,12 +58,12 @@ export default function UpdateProduct({ data }: { data: Product }) {
     }
   })
 
-  const onUpdate = (formData: ProductForm) => {
+  const onUpdate = (formData: Product) => {
     console.log(formData)
     updateProductMutation.mutate({
       id: data.id,
       product: {
-        productId: data.productId,
+        id: data.id,
         name: formData.name,
         price: formData.price,
         categoryId: formData.categoryId,

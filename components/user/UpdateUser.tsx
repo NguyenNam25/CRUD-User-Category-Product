@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { User, UserForm } from "@/types/user";
+import type { User } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -40,7 +40,7 @@ export default function UpdateUser({ data }: { data: User }) {
   const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ id, user }: { id: string; user: UserForm }) => userApi.updateUser(id, user),
+    mutationFn: ({ id, user }: { id: number; user: User }) => userApi.updateUser(id, user),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -55,7 +55,7 @@ export default function UpdateUser({ data }: { data: User }) {
     updateUserMutation.mutate({
       id: data.id,
       user: {
-        userId: data.userId,
+        id: data.id,
         fullname: formdata.fullname,
         email: formdata.email,
         password: formdata.password,

@@ -38,7 +38,7 @@ export default function TableCategory() {
     }
   })
 
-  const handleDeleteCategory = (id: string) => {
+  const handleDeleteCategory = (id: number) => {
     deleteCategoryMutation.mutate(id)
   };
 
@@ -53,8 +53,8 @@ export default function TableCategory() {
       </TableHeader>
       <TableBody>
         {data?.map((category) => (
-          <TableRow key={category.categoryId}>
-            <TableCell>{category.categoryId}</TableCell>
+          <TableRow key={category.id}>
+            <TableCell>{category.id}</TableCell>
             <TableCell>{category.name}</TableCell>
             <TableCell>
               <div className="flex gap-2">

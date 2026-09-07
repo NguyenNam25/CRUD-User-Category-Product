@@ -7,11 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductForm } from "@/types/product";
+import { Product } from "@/types/product";
 import { useQuery } from "@tanstack/react-query";
 import { Control, Controller, useForm } from "react-hook-form";
 
-export default function CategorySelect({control} : {control: Control<ProductForm>}) {
+export default function CategorySelect({control} : {control: Control<Product>}) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["categories"],
     queryFn: categoryApi.getAllCategories,
@@ -19,7 +19,7 @@ export default function CategorySelect({control} : {control: Control<ProductForm
 
   const categorySelectItem = (data ?? []).map((category) => ({
     label: category.name,
-    value: String(category.categoryId),
+    value: String(category.id),
   }));
   return (
     <Controller

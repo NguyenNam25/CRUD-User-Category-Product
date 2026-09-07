@@ -1,17 +1,17 @@
 import axiosClient from "../axiosConfiguration";
-import type { Category, CategoryForm } from "@/types/category";
+import type { Category } from "@/types/category";
 
 const categoryApi = {
     getAllCategories: async (): Promise<Category[]> => {
         const response = await axiosClient.get("/categories");
         return response.data.map((category: any) => (category))
     },
-    getCategoryById: async (id: string): Promise<Category> => {
+    getCategoryById: async (id: number): Promise<Category> => {
         const response = await axiosClient.get(`/categories/${id}`)
 
         return response.data
     },
-    createCategory: async (category: CategoryForm): Promise<Category> => {
+    createCategory: async (category: Category): Promise<Category> => {
         try {
             const response = await axiosClient.post("/categories", category)
             return response.data;
@@ -20,7 +20,7 @@ const categoryApi = {
             throw error;
         }
     },
-    updateCategory: async (id: string, category: CategoryForm): Promise<Category> => {
+    updateCategory: async (id: number, category: Category): Promise<Category> => {
         try {
             const response = await axiosClient.put(`/categories/${id}`, category)
             return response.data
@@ -29,7 +29,7 @@ const categoryApi = {
             throw error;
         }
     },
-    deleteCategory: async (id: string): Promise<Category> => {
+    deleteCategory: async (id: number): Promise<Category> => {
         try {
             const response = await axiosClient.delete(`/categories/${id}`)
             return response.data
