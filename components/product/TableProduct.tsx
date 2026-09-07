@@ -11,8 +11,6 @@ import {
 } from "@/components/ui/table";
 import AlertDialogDelete from "../Components/AlertDialogDelete";
 import UpdateUser from "./UpdateProduct";
-import { Product } from "@/types/product";
-import { categories } from "@/data/categories";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
 import { toast } from "sonner";

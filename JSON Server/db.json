@@ -39,11 +39,6 @@
       "categoryId": 2,
       "name": "Gaming Gear",
       "id": "8aaDj2M4nCg"
-    },
-    {
-      "categoryId": 3,
-      "name": "avbsbawsb",
-      "id": "4PPl44d3ZTo"
     }
   ],
   "products": [
@@ -73,11 +68,11 @@
     },
     {
       "productId": 4,
-      "name": "test 123",
-      "price": 300000,
+      "name": "test",
+      "price": 1253,
       "categoryId": 1,
-      "description": "This is test 1",
-      "id": "8fQUesXxZdM"
+      "description": "vasvsavasv",
+      "id": "bWBGPbJVkEs"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

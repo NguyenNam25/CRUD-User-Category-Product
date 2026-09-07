@@ -22,6 +22,7 @@ import type { CategoryForm } from "@/types/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
 
+
 export default function AddCategory() {
   const [open, setOpen] = useState(false);
 
@@ -99,7 +100,7 @@ export default function AddCategory() {
               />
             </Field>
             <div className="flex justify-end">
-              <Button type="reset">Reset</Button>
+              <Button type="button" onClick={() => reset()}>Reset</Button>
               <Button type="submit">Submit</Button>
             </div>
           </FieldGroup>

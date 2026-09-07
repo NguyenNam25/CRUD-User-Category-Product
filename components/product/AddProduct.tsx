@@ -11,18 +11,23 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
 import type { Product, ProductForm } from "@/types/product";
 import { Textarea } from "../ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
+import CategorySelect from "./CategorySelect";
 
 export default function AddProduct() {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<ProductForm>();
+  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
+    defaultValues: {
+      categoryId: 0,
+    },
+  });
 
   const queryClient = useQueryClient();
 
@@ -31,23 +36,23 @@ export default function AddProduct() {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["products"]
+        queryKey: ["products"],
       });
-      toast.success("Product add succesfully")
+      toast.success("Product add succesfully");
       reset();
-      setOpen(false)
+      setOpen(false);
     },
 
     onError: (error) => {
-      toast.error("Failed to add new product")
-    }
-  })
+      toast.error("Failed to add new product");
+    },
+  });
 
   const onSubmit = async (data: ProductForm) => {
     const products = await productApi.getAllProducts();
 
     const exists = products.some(
-      (product) => product.productId === data.productId
+      (product) => product.productId === data.productId,
     );
 
     if (exists) {
@@ -60,8 +65,8 @@ export default function AddProduct() {
       name: data.name,
       price: data.price,
       categoryId: data.categoryId,
-      description: data.description
-    })
+      description: data.description,
+    });
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -80,7 +85,10 @@ export default function AddProduct() {
             <Field>
               <FieldLabel htmlFor="productId">ID</FieldLabel>
               <Input
-                {...register("productId", { valueAsNumber: true, min: { value: 1, message: "value must greater than 1" } })}
+                {...register("productId", {
+                  valueAsNumber: true,
+                  min: { value: 1, message: "value must greater than 1" },
+                })}
                 id="productId"
                 type="number"
                 placeholder="id"
@@ -97,17 +105,11 @@ export default function AddProduct() {
                 {...register("price", { valueAsNumber: true })}
                 id="price"
                 type="number"
-                placeholder="example@gmail.com"
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="categoryId">Category</FieldLabel>
-              <Input
-                {...register("categoryId")}
-                id="categoryId"
-                type="text"
-                placeholder="Enter Password"
-              />
+              <CategorySelect control={control}/>
             </Field>
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
@@ -119,7 +121,9 @@ export default function AddProduct() {
               />
             </Field>
             <div className="flex justify-end">
-              <Button type="reset">Reset</Button>
+              <Button type="button" onClick={() => reset()}>
+                Reset
+              </Button>
               <Button type="submit">Submit</Button>
             </div>
           </FieldGroup>

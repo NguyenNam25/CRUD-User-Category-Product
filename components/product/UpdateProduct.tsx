@@ -26,11 +26,12 @@ import { Textarea } from "../ui/textarea";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
+import CategorySelect from "./CategorySelect";
 
 export default function UpdateProduct({ data }: { data: Product }) {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm<Product>({
+  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
     defaultValues: {
       name: data.name,
       price: data.price,
@@ -57,7 +58,7 @@ export default function UpdateProduct({ data }: { data: Product }) {
     }
   })
 
-  const onUpdate = (formData: Product) => {
+  const onUpdate = (formData: ProductForm) => {
     console.log(formData)
     updateProductMutation.mutate({
       id: data.id,
@@ -93,17 +94,11 @@ export default function UpdateProduct({ data }: { data: Product }) {
                 {...register("price", {valueAsNumber:true})}
                 id="price"
                 type="number"
-                placeholder="example@gmail.com"
               />
             </Field>
             <Field>
               <FieldLabel htmlFor="categoryId">Category</FieldLabel>
-              <Input
-                {...register("categoryId", {valueAsNumber:true})}
-                id="categoryId"
-                type="number"
-                placeholder="Enter Password"
-              />
+              <CategorySelect control={control}/>
             </Field>
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
