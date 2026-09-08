@@ -13,9 +13,9 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 const cardItems = [
-  { label: "user", route: "/user", color:"red"},
-  { label: "product", route: "/product", color:"orange"},
-  { label: "category", route: "/category", color:"yellow"},
+  { label: "user", route: "/user", className:"from-red-600 to-red-400"},
+  { label: "product", route: "/product", className:"from-orange-600 to-orange-400"},
+  { label: "category", route: "/category", className:"from-yellow-600 to-yellow-400"},
 ];
 
 export default function Home() {
@@ -23,7 +23,7 @@ export default function Home() {
 
   return (
     <div className="h-48 p-6 grid grid-cols-3 gap-4">
-      {cardItems.map((item) => (
+      {/* {cardItems.map((item) => (
         <Card
           className={`relative overflow-hidden bg-linear-to-br from-${item.color}-600 to-${item.color}-400 text-2xl text-white p-4 cursor-pointer`}
           onClick={() => router.push(item.route)}
@@ -35,7 +35,7 @@ export default function Home() {
             <ArrowRight className="w-6 h-6" />
           </div>
         </Card>
-      ))}
+      ))} */}
     </div>
   );
 }

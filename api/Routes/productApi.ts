@@ -1,11 +1,11 @@
-import axiosClient from "../axiosConfiguration"
+import axios from "axios";
 import type { Product, ProductDisplay } from "@/types/product";
 import type { Category } from "@/types/category";
 
 const productApi = {
     getAllProducts: async (): Promise<ProductDisplay[]> => {
-        const resproducts = await axiosClient.get("/products");
-        const rescategories = await axiosClient.get("/categories");
+        const resproducts = await axios.get("/api/products");
+        const rescategories = await axios.get("/api/categories");
         const response = resproducts.data.map((product: any) => ({
             ...product,
             category: rescategories.data.find((category: Category) => category.id === product.categoryId),
@@ -13,8 +13,8 @@ const productApi = {
         return response
     },
     getProductById: async (id: number): Promise<ProductDisplay> => {
-        const product = await axiosClient.get(`/products/${id}`)
-        const rescategories = await axiosClient.get("/categories");
+        const product = await axios.get(`/api/products/${id}`)
+        const rescategories = await axios.get("/api/categories");
         const response = {
             ...product.data,
             category: rescategories.data.find((category: Category) => category.id === product.data.categoryId),
@@ -23,7 +23,7 @@ const productApi = {
     },
     createProduct: async (product: Product): Promise<Product> => {
         try {
-            const response = await axiosClient.post("/products", product)
+            const response = await axios.post("/api/products", product)
             return response.data;
         } catch (error) {
             console.error("Error creating product:", product);
@@ -32,7 +32,7 @@ const productApi = {
     },
     updateProduct: async (id: number, product: Product): Promise<Product> => {
         try {
-            const response = await axiosClient.put(`/products/${id}`, product)
+            const response = await axios.put(`/api/products/${id}`, product)
             return response.data
         } catch (error) {
             console.error(`Error updating book with id ${id}:`, error);
@@ -41,7 +41,7 @@ const productApi = {
     },
     deleteProduct: async (id: number): Promise<Product> => {
         try {
-            const response = await axiosClient.delete(`/products/${id}`)
+            const response = await axios.delete(`/api/products/${id}`)
             return response.data
         } catch (error) {
             console.error(`Error deleting book with id ${id}:`, error);

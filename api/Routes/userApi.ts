@@ -1,19 +1,20 @@
+import axios from "axios";
 import axiosClient from "../axiosConfiguration";
 import type { User } from "@/types/user";
 
 const userApi = {
   getAllUsers: async (): Promise<User[]> => {
-    const response = await axiosClient.get("/users");
+    const response = await axios.get("/api/users");
     return response.data.map((user: any) => user);
   },
   getUserById: async (id: number): Promise<User> => {
-    const response = await axiosClient.get(`/users/${id}`);
+    const response = await axios.get(`/users/${id}`);
 
     return response.data;
   },
   createUser: async (user: User): Promise<User> => {
     try {
-      const response = await axiosClient.post("/users", user);
+      const response = await axios.post("/api/users", user);
       return response.data;
     } catch (error) {
       console.error("Error creating user:", user);
@@ -22,7 +23,7 @@ const userApi = {
   },
   updateUser: async (id: number, user: User): Promise<User> => {
     try {
-      const response = await axiosClient.put(`/users/${id}`, user);
+      const response = await axios.put(`/api/users/${id}`, user);
       return response.data;
     } catch (error) {
       console.error(`Error updating book with id ${id}:`, error);
@@ -31,7 +32,7 @@ const userApi = {
   },
   deleteUser: async (id: number): Promise<User> => {
     try {
-      const response = await axiosClient.delete(`/users/${id}`);
+      const response = await axios.delete(`/api/users/${id}`);
       return response.data;
     } catch (error) {
       console.error(`Error deleting user with id ${id}:`, error);
@@ -40,9 +41,13 @@ const userApi = {
   },
   login: async (email: string, password: string): Promise<User> => {
     try {
-      const response = await axiosClient.get(
-        `/users?email=${email}&password=${password}`,
-      );
+      // const response = await axiosClient.get(
+      //   `/users?email=${email}&password=${password}`,
+      // );
+      const response = await axios.post("/api/login", {
+        email,
+        password,
+      });
 
       const user = response.data[0];
 

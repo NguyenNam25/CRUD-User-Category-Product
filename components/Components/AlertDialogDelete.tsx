@@ -17,28 +17,25 @@ import { toast } from "sonner";
 type AlertDialogDelete = {
   id: number;
   type: "category" | "product" | "user";
+  open: boolean,
+  onOpenChange: (open: boolean) => void;
   onDelete: (id: number) => void;
 };
 
 export default function AlertDialogDelete({
   id,
   type,
+  open,
+  onOpenChange,
   onDelete,
 }: AlertDialogDelete) {
-  const [open, setOpen] = useState(false);
-
   const handleDelete = () => {
-    try {
       onDelete(id);
-      toast.success(`${type} delete successfully`);
-      setOpen(false);
-    } catch (error) {
-      toast.error(`Failed to delete ${type}`);
-    }
+      onOpenChange(false);
   };
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger className={"py-1 px-2 text-white bg-red-600 rounded-md"}>Delete</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      {/* <AlertDialogTrigger className={"py-1 px-2 text-white bg-red-600 rounded-md"}>Delete</AlertDialogTrigger> */}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Category</AlertDialogTitle>

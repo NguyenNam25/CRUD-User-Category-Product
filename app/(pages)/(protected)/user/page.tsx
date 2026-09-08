@@ -1,26 +1,13 @@
-import ListLayout from "@/components/ui/ListLayout";
-import ListHeaderLayout from "@/components/ui/ListHeaderLayout";
-import AddUser from "@/components/user/AddUser";
 import TableUser from "@/components/user/TableUser";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
 import CustomBreadcrumb from "@/components/Components/CustomBreadcrumb";
+import { columns } from "@/components/user/columns";
 
-export default function User() {
+export default async function User() {
   return (
-    <div className="my-6">
-      <CustomBreadcrumb prop="User"/>
-      <ListLayout>
-        <ListHeaderLayout content="User" AddComponent={<AddUser />} />
-        <TableUser />
-      </ListLayout>
+    <div className="my-6 px-4">
+      <CustomBreadcrumb prop="User" />
+      <h2 className="text-2xl my-5">List of User</h2>
+      <TableUser columns={columns} />
     </div>
   );
 }

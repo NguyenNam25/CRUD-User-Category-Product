@@ -19,10 +19,10 @@
       "password": "t123"
     },
     {
-      "id": 5,
-      "fullname": "test user",
       "email": "test@gmail.com",
-      "password": "t123"
+      "password": "$2a$10$PJ3zZTCaUIIj9VlWfqAUu.u0P83TzSO83unAnxUo4xzBNWbzcDP2i",
+      "fullname": "test user 1",
+      "id": 4
     }
   ],
   "categories": [

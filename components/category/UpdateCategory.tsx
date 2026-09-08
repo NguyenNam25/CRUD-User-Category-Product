@@ -26,9 +26,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
 import { useState } from "react";
 
-export default function UpdateCategory({ data }: { data: Category }) {
-  const [open, setOpen] = useState(false);
-
+export default function UpdateCategory({
+  data,
+  open,
+  onOpenChange,
+}: {
+  data: Category;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { register, handleSubmit, reset } = useForm<Category>({
     defaultValues: {
       name: data.name
@@ -45,7 +51,7 @@ export default function UpdateCategory({ data }: { data: Category }) {
         queryKey: ["categories"]
       });
       toast.success("Category added successfully");
-      setOpen(false);
+      onOpenChange(false);
     },
 
     onError: () => {
@@ -64,10 +70,10 @@ export default function UpdateCategory({ data }: { data: Category }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
         Update
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
           <DialogTitle>Update Category</DialogTitle>

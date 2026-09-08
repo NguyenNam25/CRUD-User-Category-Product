@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default function CustomBreadcrumb({prop}:{prop: string}) {
   return (
-    <Breadcrumb className="mx-4">
+    <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink render={<Link href={"/"}/>}>Home</BreadcrumbLink>

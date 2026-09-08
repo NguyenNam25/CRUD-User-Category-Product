@@ -26,9 +26,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
 import { useState } from "react";
 
-export default function UpdateUser({ data }: { data: User }) {
-  const [open, setOpen] = useState(false)
-
+export default function UpdateUser({
+  data,
+  open,
+  onOpenChange,
+}: {
+  data: User;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { register, handleSubmit, reset } = useForm<User>({
     defaultValues: {
       fullname: data.fullname,
@@ -40,16 +46,17 @@ export default function UpdateUser({ data }: { data: User }) {
   const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ id, user }: { id: number; user: User }) => userApi.updateUser(id, user),
+    mutationFn: ({ id, user }: { id: number; user: User }) =>
+      userApi.updateUser(id, user),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["users"]
-      })
-      toast.success("Update successfully")
-      setOpen(false)
-    }
-  })
+        queryKey: ["users"],
+      });
+      toast.success("Update successfully");
+      onOpenChange(false);
+    },
+  });
 
   const onUpdate = (formdata: User) => {
     updateUserMutation.mutate({
@@ -59,16 +66,15 @@ export default function UpdateUser({ data }: { data: User }) {
         fullname: formdata.fullname,
         email: formdata.email,
         password: formdata.password,
-      }
-
-    })
+      },
+    });
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
         Update
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
           <DialogTitle>Update Category</DialogTitle>
