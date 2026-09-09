@@ -1,7 +1,6 @@
 import z from "zod";
 
 export const userSchema = z.object({
-  id: z.number({ message: "ID required" }).min(1, "ID must be greater than 1"),
   fullname: z
     .string({ message: "Full Name is required" })
     .min(1, "Full name is required")

@@ -1,28 +1,19 @@
 import axios from "axios";
 
-const instance = axios.create({
-  baseURL: "http://localhost:4000",
-  headers: {
-    "Content-Type": "application/json",
-  },
+const axiosClient = axios.create({
+  baseURL: "/api",
 });
 
-instance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error("API Error:", error);
-    return Promise.reject(error);
-  },
-);
+axiosClient.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = sessionStorage.getItem("accessToken");
 
-const axiosClient = {
-  get: (url: string, params: object = {}) => instance.get(url, { params }),
-  post: (url: string, data: unknown, params: object = {}) =>
-    instance.post(url, data, { params }),
-  put: (url: string, data: unknown, params: object = {}) =>
-    instance.put(url, data, { params }),
-  delete: (url: string, params: object = {}) =>
-    instance.delete(url, { params }),
-};
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  return config;
+});
 
 export default axiosClient;

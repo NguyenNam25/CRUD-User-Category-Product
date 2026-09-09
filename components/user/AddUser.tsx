@@ -14,11 +14,12 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { User } from "@/types/user";
+import type { User, UserRegister } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
 import { userSchema } from "@/schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
@@ -28,14 +29,14 @@ export default function AddUser() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<User>({
+  } = useForm<UserRegister>({
     resolver: zodResolver(userSchema),
   });
 
   const queryClient = useQueryClient();
 
   const addUserMutation = useMutation({
-    mutationFn: userApi.createUser,
+    mutationFn: userApi.register,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -47,23 +48,16 @@ export default function AddUser() {
     },
 
     onError: (error) => {
-      toast.error("Create failed");
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data);
+
+        toast.error(error.response?.data || "Đăng ký thất bại");
+      }
     },
   });
 
-  const onSubmit = async (data: User) => {
-    console.log(data);
-    const users = await userApi.getAllUsers();
-
-    const exists = users.some((user) => user.id === data.id);
-
-    if (exists) {
-      toast.error("User ID already exists");
-      return;
-    }
-
+  const onSubmit = async (data: UserRegister) => {
     addUserMutation.mutate({
-      id: data.id,
       fullname: data.fullname,
       email: data.email,
       password: data.password,
@@ -84,18 +78,6 @@ export default function AddUser() {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
-              <Input
-                {...register("id", { valueAsNumber: true })}
-                id="id"
-                type="number"
-                placeholder="id"
-              />
-              {errors.id && (
-                <p className="text-red-500 text-sm">{errors.id.message}</p>
-              )}
-            </Field>
             <Field>
               <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
               <Input

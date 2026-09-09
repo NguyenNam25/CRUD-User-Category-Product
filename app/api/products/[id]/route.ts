@@ -10,10 +10,13 @@ export async function PUT(
 
   const body = await request.json();
 
+  const authorization = request.headers.get("Authorization");
+
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: authorization ?? "",
     },
     body: JSON.stringify(body),
   });
@@ -31,8 +34,13 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
+  const authorization = request.headers.get("Authorization");
+
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      Authorization: authorization ?? "",
+    },
   });
 
   return NextResponse.json(

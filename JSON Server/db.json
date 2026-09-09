@@ -4,24 +4,24 @@
       "id": 1,
       "fullname": "Nguyen",
       "email": "n123@gmail.com",
-      "password": "t123"
+      "password": "$2a$10$jm3SwSB658b/uEV7SxXpJOvqMcmJtjV4cuSc7.6U/LQkRvmBjadNq"
     },
     {
       "id": 2,
       "fullname": "Quang",
       "email": "q456@gmail.com",
-      "password": "t123"
+      "password": "$2a$10$LbeeSR87IaZjeCCpjQUpwezFrGCuf.BJAjPCUXqP/BScE1zMHE0/W"
     },
     {
       "id": 3,
       "fullname": "Nam",
       "email": "n789@gmail.com",
-      "password": "t123"
+      "password": "$2a$10$IzedVYprX/UaKhwQYWrfeecskg85pKUgIqWmgSIcwyroav.cTJ.Pi"
     },
     {
       "email": "test@gmail.com",
-      "password": "$2a$10$PJ3zZTCaUIIj9VlWfqAUu.u0P83TzSO83unAnxUo4xzBNWbzcDP2i",
-      "fullname": "test user 1",
+      "password": "$2a$10$L6h5n.aV83f.GECXuinOeOknP1zc0vmGtNcitzLg/ZpY8Nf3nXo66",
+      "fullname": "test user",
       "id": 4
     }
   ],

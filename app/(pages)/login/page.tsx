@@ -23,40 +23,36 @@ type LoginForm = {
 };
 
 export default function Login() {
-  const {
-    register,
-    handleSubmit,
-  } = useForm<LoginForm>()
+  const { register, handleSubmit } = useForm<LoginForm>();
 
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const loginMutation = useMutation({
-    mutationFn: ({ email, password }: { email: string, password: string }) => userApi.login(email, password),
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      userApi.login(email, password),
 
-    onSuccess: (user) => {
-
-      login(user);
+    onSuccess: (data) => {
+      login(data.user, data.accessToken);
       // window.dispatchEvent(new Event("userLogin"));
+      toast.success("Login succesfully");
 
-      toast.success("Login succesfully")
-
-      router.push("/")
+      router.push("/");
     },
 
     onError: () => {
-      toast.error("Failed to login")
-    }
-  })
+      toast.error("Failed to login");
+    },
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
   const onSubmit = (data: LoginForm) => {
     loginMutation.mutate({
       email: data.email,
       password: data.password,
-    })
+    });
     // router.push('/')
-  }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 space-y-12">
@@ -71,7 +67,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="email@example.com"
-              // required
+                // required
               />
             </Field>
 
@@ -82,7 +78,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-              // required
+                // required
               />
             </Field>
 
