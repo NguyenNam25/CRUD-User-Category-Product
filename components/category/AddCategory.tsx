@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { Category } from "@/types/category";
+import type { Category, CategoryForm } from "@/types/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
 import { categorySchema } from "@/schemas/categoryShema";
@@ -28,7 +28,7 @@ export default function AddCategory() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<Category>({
+  } = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
   });
 
@@ -51,18 +51,8 @@ export default function AddCategory() {
     },
   });
 
-  const onSubmit = async (data: Category) => {
-    const categories = await categoryApi.getAllCategories();
-
-    const exists = categories.some((category) => category.id === data.id);
-
-    if (exists) {
-      toast.error("Category ID already exists");
-      return;
-    }
-
+  const onSubmit = async (data: CategoryForm) => {
     createCategoryMutation.mutate({
-      id: data.id,
       name: data.name,
     });
   };
@@ -81,18 +71,6 @@ export default function AddCategory() {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
-              <Input
-                {...register("id", { valueAsNumber: true })}
-                id="id"
-                type="number"
-                placeholder="id"
-              />
-              {errors.id && (
-                <p className="text-red-500 text-sm">{errors.id.message}</p>
-              )}
-            </Field>
             <Field>
               <FieldLabel htmlFor="name">Category Name</FieldLabel>
               <Input

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Category } from "@/types/category";
+import type { Category, CategoryForm } from "@/types/category";
 import axiosClient from "../axiosConfiguration";
 
 const categoryApi = {
@@ -11,7 +11,7 @@ const categoryApi = {
     const response = await axiosClient.get(`/categories/${id}`);
     return response.data;
   },
-  createCategory: async (category: Category): Promise<Category> => {
+  createCategory: async (category: CategoryForm): Promise<Category> => {
     try {
       const response = await axiosClient.post("/categories", category);
       return response.data;
@@ -20,7 +20,7 @@ const categoryApi = {
       throw error;
     }
   },
-  updateCategory: async (id: number, category: Category): Promise<Category> => {
+  updateCategory: async (id: number, category: CategoryForm): Promise<Category> => {
     try {
       const response = await axiosClient.put(`/categories/${id}`, category);
       return response.data;

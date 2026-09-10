@@ -21,7 +21,7 @@ import {
 import { ProductDisplay } from "@/types/product";
 import { DataTableFeatures, features } from "@/types/data-table-features";
 import { Input } from "../ui/input";
-import { DataTablePagination } from "../Components/TablePaginition";
+import { DataTablePagination } from "../Components/TablePagination";
 import ListLayout from "../ui/ListLayout";
 import AddProduct from "./AddProduct";
 

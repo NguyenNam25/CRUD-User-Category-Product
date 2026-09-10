@@ -11,12 +11,12 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { Product } from "@/types/product";
+import type { ProductForm } from "@/types/product";
 import { Textarea } from "../ui/textarea";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
 import CategorySelect from "./CategorySelect";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ export default function AddProduct() {
     reset,
     control,
     formState: { errors },
-  } = useForm<Product>({
+  } = useForm<ProductForm>({
     defaultValues: {
       categoryId: 0,
     },
@@ -57,19 +57,8 @@ export default function AddProduct() {
     },
   });
 
-  const onSubmit = async (data: Product) => {
-    console.log(data);
-    const products = await productApi.getAllProducts();
-
-    const exists = products.some((product) => product.id === data.id);
-
-    if (exists) {
-      toast.error("product ID already exists");
-      return;
-    }
-
+  const onSubmit = async (data: ProductForm) => {
     createProductMutation.mutate({
-      id: data.id,
       name: data.name,
       price: data.price,
       categoryId: data.categoryId,
@@ -90,18 +79,6 @@ export default function AddProduct() {
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="id">ID</FieldLabel>
-              <Input
-                {...register("id", { valueAsNumber: true })}
-                id="id"
-                type="number"
-                placeholder="id"
-              />
-              {errors.id && (
-                <p className="text-red-500 text-sm">{errors.id.message}</p>
-              )}
-            </Field>
             <Field>
               <FieldLabel htmlFor="name">Product Name</FieldLabel>
               <Input {...register("name")} id="name" type="text" required />

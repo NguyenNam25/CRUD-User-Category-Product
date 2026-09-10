@@ -17,8 +17,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useEffect, useState } from "react";
-import type { User } from "@/types/user";
 import { useAuth } from "../auth/AuthContext";
 
 const menus = [

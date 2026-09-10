@@ -1,7 +1,6 @@
 import z from "zod";
 
 export const productSchema = z.object({
-  id: z.number({ message: "ID required" }).min(1, "ID must be greater than 1"),
   name: z
     .string({ message: "Product name is required" })
     .min(2, "Product name is required")

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Product, ProductDisplay } from "@/types/product";
+import type { Product, ProductDisplay, ProductForm } from "@/types/product";
 import type { Category } from "@/types/category";
 import axiosClient from "../axiosConfiguration";
 
@@ -22,7 +22,7 @@ const productApi = {
         }
         return response
     },
-    createProduct: async (product: Product): Promise<Product> => {
+    createProduct: async (product: ProductForm): Promise<Product> => {
         try {
             const response = await axiosClient.post("/products", product)
             return response.data;
@@ -31,7 +31,7 @@ const productApi = {
             throw error;
         }
     },
-    updateProduct: async (id: number, product: Product): Promise<Product> => {
+    updateProduct: async (id: number, product: ProductForm): Promise<Product> => {
         try {
             const response = await axiosClient.put(`/products/${id}`, product)
             return response.data

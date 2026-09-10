@@ -5,8 +5,6 @@ const JSON_SERVER_URL = "http://localhost:4000";
 export async function POST(request: Request) {
   const body = await request.json();
 
-  console.log("Login body:", body);
-
   const response = await fetch(`${JSON_SERVER_URL}/login`, {
     method: "POST",
     headers: {
@@ -19,7 +17,35 @@ export async function POST(request: Request) {
 
   console.log("JSON Server response:", data);
 
-  return NextResponse.json(data, {
-    status: response.status,
-  });
+  if (!response.ok) {
+    return NextResponse.json(data, {
+      status: response.status,
+    });
+  }
+
+  if (!data?.accessToken) {
+    console.error("Login proxy: thiếu accessToken trong phản hồi");
+    return NextResponse.json(
+      { message: "Đăng nhập thất bại, thiếu thông tin xác thực" },
+      { status: 502 }
+    );
+  }
+
+  const res = NextResponse.json(
+    {
+      user: data.user,
+    },
+    {
+      status: response.status,
+    }
+  );
+
+  res.cookies.set("token", data.accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/"
+  })
+
+  return res;
 }

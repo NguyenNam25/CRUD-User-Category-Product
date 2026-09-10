@@ -16,10 +16,12 @@ import { toast } from "sonner";
 import { Product } from "@/types/product";
 import productApi from "@/api/Routes/productApi";
 import UpdateProduct from "./UpdateProduct";
+import ProductDetails from "./ProductDetails";
 
-export default function ProductActions({ product }: { product: Product }) {
+export default function ProductActions({ product }: { product: Product}) {
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -55,6 +57,14 @@ export default function ProductActions({ product }: { product: Product }) {
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {
+                setOpenDetails(true);
+              }}
+            >
+              View Details
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
                 setOpenUpdate(true);
               }}
             >
@@ -73,6 +83,8 @@ export default function ProductActions({ product }: { product: Product }) {
       </DropdownMenu>
 
       <UpdateProduct data={product} open={openUpdate} onOpenChange={setOpenUpdate} />
+
+      <ProductDetails data={product} open={openDetails} onOpenChange={setOpenDetails}/>
 
       <AlertDialogDelete
         id={product.id}

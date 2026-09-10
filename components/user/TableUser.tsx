@@ -21,7 +21,7 @@ import {
 import { DataTableFeatures } from "@/types/data-table-features";
 import { features } from "@/types/data-table-features";
 import { User } from "@/types/user";
-import { DataTablePagination } from "../Components/TablePaginition";
+import { DataTablePagination } from "../Components/TablePagination";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import AddUser from "./AddUser";
@@ -52,8 +52,13 @@ export default function TableUser({ columns }: DataTableProps) {
     onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
-      columnFilters,
     },
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 5,
+      }
+    }
   });
 
   return (

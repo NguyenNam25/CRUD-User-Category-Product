@@ -2,28 +2,22 @@
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Product } from "@/types/product";
+import type { Product, ProductForm } from "@/types/product";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
 import CategorySelect from "./CategorySelect";
@@ -37,7 +31,7 @@ export default function UpdateProduct({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { register, handleSubmit, reset, control } = useForm<Product>({
+  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
     defaultValues: {
       name: data.name,
       price: data.price,
@@ -49,7 +43,7 @@ export default function UpdateProduct({
   const queryClient = useQueryClient();
 
   const updateProductMutation = useMutation({
-    mutationFn: ({ id, product }: { id: number; product: Product }) =>
+    mutationFn: ({ id, product }: { id: number; product: ProductForm }) =>
       productApi.updateProduct(id, product),
 
     onSuccess: () => {
@@ -65,12 +59,11 @@ export default function UpdateProduct({
     },
   });
 
-  const onUpdate = (formData: Product) => {
+  const onUpdate = (formData: ProductForm) => {
     console.log(formData);
     updateProductMutation.mutate({
       id: data.id,
       product: {
-        id: data.id,
         name: formData.name,
         price: formData.price,
         categoryId: formData.categoryId,
@@ -81,13 +74,10 @@ export default function UpdateProduct({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
-        Update
-      </DialogTrigger> */}
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
-          <DialogTitle>Update Category</DialogTitle>
-          <DialogDescription>Update information of category</DialogDescription>
+          <DialogTitle>Update Product</DialogTitle>
+          <DialogDescription>Update information of product</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onUpdate)}>
           <FieldGroup>

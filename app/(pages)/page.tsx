@@ -2,6 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthContext";
 
 const cardItems = [
   {
@@ -23,6 +24,10 @@ const cardItems = [
 
 export default function Home() {
   const router = useRouter();
+
+  const {currentUser} = useAuth();
+
+  console.log(currentUser)
   return (
     <div className="h-48 p-6 grid grid-cols-3 gap-4">
       {cardItems.map((item) => (

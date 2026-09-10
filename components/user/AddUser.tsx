@@ -16,10 +16,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 import type { User, UserRegister } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import userApi from "@/api/Routes/userApi";
 import { userSchema } from "@/schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import authApi from "@/api/Routes/authApi";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,7 @@ export default function AddUser() {
   const queryClient = useQueryClient();
 
   const addUserMutation = useMutation({
-    mutationFn: userApi.register,
+    mutationFn: authApi.register,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

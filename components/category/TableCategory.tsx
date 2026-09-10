@@ -24,7 +24,7 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 import { Input } from "../ui/input";
-import { DataTablePagination } from "../Components/TablePaginition";
+import { DataTablePagination } from "../Components/TablePagination";
 import ListLayout from "../ui/ListLayout";
 import AddCategory from "./AddCategory";
 

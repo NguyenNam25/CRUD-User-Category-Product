@@ -2,29 +2,23 @@
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { User } from "@/types/user";
+import type { User, UserRegister } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
-import { useState } from "react";
 
 export default function UpdateUser({
   data,
@@ -35,7 +29,7 @@ export default function UpdateUser({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<User>({
+  const { register, handleSubmit, reset } = useForm<UserRegister>({
     defaultValues: {
       fullname: data.fullname,
       email: data.email,
@@ -46,7 +40,7 @@ export default function UpdateUser({
   const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ id, user }: { id: number; user: User }) =>
+    mutationFn: ({ id, user }: { id: number; user: UserRegister }) =>
       userApi.updateUser(id, user),
 
     onSuccess: () => {
@@ -58,11 +52,10 @@ export default function UpdateUser({
     },
   });
 
-  const onUpdate = (formdata: User) => {
+  const onUpdate = (formdata: UserRegister) => {
     updateUserMutation.mutate({
       id: data.id,
       user: {
-        id: data.id,
         fullname: formdata.fullname,
         email: formdata.email,
         password: formdata.password,
@@ -72,13 +65,10 @@ export default function UpdateUser({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
-        Update
-      </DialogTrigger> */}
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
-          <DialogTitle>Update Category</DialogTitle>
-          <DialogDescription>Update information of category</DialogDescription>
+          <DialogTitle>Update User</DialogTitle>
+          <DialogDescription>Update information of user</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onUpdate)}>
           <FieldGroup>

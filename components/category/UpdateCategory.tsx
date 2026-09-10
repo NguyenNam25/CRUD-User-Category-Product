@@ -2,29 +2,23 @@
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Category } from "@/types/category";
+import type { Category, CategoryForm } from "@/types/category";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
-import { useState } from "react";
 
 export default function UpdateCategory({
   data,
@@ -35,7 +29,7 @@ export default function UpdateCategory({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<Category>({
+  const { register, handleSubmit, reset } = useForm<CategoryForm>({
     defaultValues: {
       name: data.name
     }
@@ -44,7 +38,7 @@ export default function UpdateCategory({
   const queryClient = useQueryClient();
 
   const updateCategoryMutation = useMutation({
-    mutationFn: ({ id, category }: { id: number; category: Category }) => categoryApi.updateCategory(id, category),
+    mutationFn: ({ id, category }: { id: number; category: CategoryForm }) => categoryApi.updateCategory(id, category),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -59,11 +53,10 @@ export default function UpdateCategory({
     }
   })
 
-  const onUpdate = (formData: Category) => {
+  const onUpdate = (formData: CategoryForm) => {
     updateCategoryMutation.mutate({
       id: data.id,
       category: {
-        id: data.id,
         name: formData.name
       }
     })
@@ -71,9 +64,6 @@ export default function UpdateCategory({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* <DialogTrigger className={"py-1 px-2 text-white bg-blue-500 rounded-md"}>
-        Update
-      </DialogTrigger> */}
       <DialogContent className="max-w-2xl!">
         <DialogHeader>
           <DialogTitle>Update Category</DialogTitle>

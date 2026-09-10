@@ -1,73 +1,50 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext} from "react";
 
 import type { User } from "@/types/user";
 import { useRouter } from "next/navigation";
+import authApi from "@/api/Routes/authApi";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type AuthContextType = {
   currentUser: User | null;
-  accessToken: string | null;
   isLoading: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: User) => void;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const user = sessionStorage.getItem("user");
-    const token = sessionStorage.getItem("accessToken");
+  const {data: currentUser, isLoading} = useQuery ({
+    queryKey: ["me"],
+    queryFn: authApi.fetchMe,
 
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
+  })
 
-    if (token) {
-      setAccessToken(token);
-    }
-    
-    setIsLoading(false);
-  }, []);
-
-  const login = (user: User, token: string) => {
-    sessionStorage.setItem("user", JSON.stringify(user));
-    sessionStorage.setItem("accessToken", token);
-
-    setCurrentUser(user);
-    setAccessToken(token);
+  const login = (user: User) => {
+    queryClient.setQueryData(["me"],user)
   };
 
-  const logout = () => {
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("accessToken");
-
-    setCurrentUser(null);
-    setAccessToken(null);
-
-    router.push("/login");
+  const logout = async () => {
+    try {
+      await authApi.logout()
+    } catch (error) {
+      console.error("Logout error: ", error);
+    } finally {
+      queryClient.setQueryData(["me"],null)
+      router.push("/login");
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        currentUser,
-        accessToken,
+        currentUser: currentUser ?? null,
         isLoading,
         login,
         logout,

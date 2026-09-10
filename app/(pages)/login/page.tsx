@@ -1,18 +1,15 @@
 "use client";
 
-import userApi from "@/api/Routes/userApi";
+import authApi from "@/api/Routes/authApi";
 import { useAuth } from "@/components/auth/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,10 +26,10 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
-      userApi.login(email, password),
+      authApi.login(email, password),
 
     onSuccess: (data) => {
-      login(data.user, data.accessToken);
+      login(data.user);
       // window.dispatchEvent(new Event("userLogin"));
       toast.success("Login succesfully");
 
@@ -67,7 +64,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 placeholder="email@example.com"
-                // required
+                required
               />
             </Field>
 
@@ -78,7 +75,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                // required
+                required
               />
             </Field>
 
