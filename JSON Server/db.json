@@ -23,6 +23,12 @@
       "password": "$2a$10$L6h5n.aV83f.GECXuinOeOknP1zc0vmGtNcitzLg/ZpY8Nf3nXo66",
       "fullname": "test user",
       "id": 4
+    },
+    {
+      "name": "test update",
+      "email": "ttt@gmail.com",
+      "password": "$2a$10$UIHoGCj3zc9OWS5VE2OsK.AER2905zmnhFNInZSZuCXTJbNuWSUuy",
+      "id": 5
     }
   ],
   "categories": [

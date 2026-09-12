@@ -8,9 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -19,6 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import categoryApi from "@/api/Routes/categoryApi";
 import { categorySchema } from "@/schemas/categoryShema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import CategoryField from "./CategoryField";
 
 export default function AddCategory() {
   const [open, setOpen] = useState(false);
@@ -70,26 +68,7 @@ export default function AddCategory() {
           <DialogDescription>Add new category</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="name">Category Name</FieldLabel>
-              <Input
-                {...register("name")}
-                id="name"
-                type="text"
-                placeholder="name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
-              )}
-            </Field>
-            <div className="flex justify-end">
-              <Button type="button" onClick={() => reset()}>
-                Reset
-              </Button>
-              <Button type="submit">Submit</Button>
-            </div>
-          </FieldGroup>
+          <CategoryField register={register} errors={errors} reset={reset} />
         </form>
       </DialogContent>
     </Dialog>

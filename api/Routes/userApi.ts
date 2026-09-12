@@ -2,13 +2,13 @@ import axios from "axios";
 import axiosClient from "../axiosConfiguration";
 import type { User, UserRegister } from "@/types/user";
 
-const userApi = {
+const userApi = { 
   getAllUsers: async (): Promise<User[]> => {
     const response = await axiosClient.get("/users");
     return response.data.map((user: any) => user);
   },
   getUserById: async (id: number): Promise<User> => {
-    const response = await axios.get(`/users/${id}`);
+    const response = await axiosClient.get(`/users/${id}`);
 
     return response.data;
   },

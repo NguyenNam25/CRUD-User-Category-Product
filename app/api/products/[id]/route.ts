@@ -2,6 +2,28 @@ import { NextResponse } from "next/server";
 
 const JSON_SERVER_URL = "http://localhost:4000/products";
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  const authorization = request.headers.get("Authorization");
+
+  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
+    headers: {
+      Authorization: authorization ?? "",
+    },
+  });
+
+  const data = await response.json();
+
+  return NextResponse.json(data, {
+    status: response.status,
+  });
+}
+
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

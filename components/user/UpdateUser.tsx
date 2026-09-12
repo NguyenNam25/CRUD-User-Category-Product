@@ -7,18 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import type { User, UserRegister } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
+import UserField from "./UserField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userSchema } from "@/schemas/userSchema";
 
 export default function UpdateUser({
   data,
@@ -29,12 +25,18 @@ export default function UpdateUser({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { register, handleSubmit, reset } = useForm<UserRegister>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<UserRegister>({
     defaultValues: {
       fullname: data.fullname,
       email: data.email,
       password: data.password,
     },
+    resolver: zodResolver(userSchema),
   });
 
   const queryClient = useQueryClient();
@@ -71,34 +73,7 @@ export default function UpdateUser({
           <DialogDescription>Update information of user</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onUpdate)}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
-              <Input {...register("fullname")} id="fullname" type="text" />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                {...register("email")}
-                id="email"
-                type="email"
-                placeholder="example@gmail.com"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input
-                {...register("password")}
-                id="password"
-                type="text"
-                placeholder="Enter Password"
-              />
-            </Field>
-            <div className="flex justify-end">
-              <Button type="reset">Reset</Button>
-              <Button type="submit">Submit</Button>
-            </div>
-          </FieldGroup>
+          <UserField register={register} errors={errors} reset={reset} />
         </form>
       </DialogContent>
     </Dialog>

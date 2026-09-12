@@ -7,20 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import type { Product, ProductForm } from "@/types/product";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Textarea } from "../ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import productApi from "@/api/Routes/productApi";
-import CategorySelect from "./CategorySelect";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "@/schemas/productSchema";
+import ProductField from "./ProductField";
 
 export default function UpdateProduct({
   data,
@@ -31,13 +25,14 @@ export default function UpdateProduct({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { register, handleSubmit, reset, control } = useForm<ProductForm>({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<ProductForm>({
     defaultValues: {
       name: data.name,
       price: data.price,
       categoryId: data.categoryId,
       description: data.description,
     },
+    resolver: zodResolver(productSchema),
   });
 
   const queryClient = useQueryClient();
@@ -80,49 +75,7 @@ export default function UpdateProduct({
           <DialogDescription>Update information of product</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onUpdate)}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="name">Product Name</FieldLabel>
-              <Input {...register("name")} id="name" type="text" />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="price">Price</FieldLabel>
-              <Input
-                {...register("price", { valueAsNumber: true })}
-                id="price"
-                type="number"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="categoryId">Category</FieldLabel>
-              <CategorySelect control={control} />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="description">Description</FieldLabel>
-              <Textarea
-                {...register("description")}
-                id="description"
-                placeholder="Description"
-                className="h-32 max-h-32 overflow-y-auto"
-              />
-            </Field>
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                onClick={() =>
-                  reset({
-                    name: data.name,
-                    price: data.price,
-                    categoryId: data.categoryId,
-                    description: data.description,
-                  })
-                }
-              >
-                Reset
-              </Button>
-              <Button type="submit">Submit</Button>
-            </div>
-          </FieldGroup>
+          <ProductField register={register} errors={errors} reset={reset} control={control}/>
         </form>
       </DialogContent>
     </Dialog>

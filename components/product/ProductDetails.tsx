@@ -9,7 +9,6 @@ import {
 import { Product } from "@/types/product";
 import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
-import { Currency } from "lucide-react";
 
 export default function ProductDetails({
   data,

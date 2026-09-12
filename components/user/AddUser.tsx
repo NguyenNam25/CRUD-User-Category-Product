@@ -8,9 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -20,6 +17,7 @@ import { userSchema } from "@/schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import authApi from "@/api/Routes/authApi";
+import UserField from "./UserField";
 
 export default function AddUser() {
   const [open, setOpen] = useState(false);
@@ -77,53 +75,7 @@ export default function AddUser() {
           <DialogDescription>Add new user</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
-              <Input
-                {...register("fullname")}
-                id="fullname"
-                type="text"
-                placeholder="Enter Full Name"
-              />
-
-              {errors.fullname && (
-                <p className="text-red-500 text-sm">{errors.fullname.message}</p>
-              )}
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                {...register("email")}
-                id="email"
-                type="email"
-                placeholder="example@gmail.com"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email.message}</p>
-              )}
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input
-                {...register("password")}
-                id="password"
-                type="text"
-                placeholder="Enter Password"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">
-                  {errors.password.message}
-                </p>
-              )}
-            </Field>
-            <div className="flex justify-end">
-              <Button type="button" onClick={() => reset()}>
-                Reset
-              </Button>
-              <Button type="submit">Submit</Button>
-            </div>
-          </FieldGroup>
+          <UserField register={register} errors={errors} reset={reset}/>
         </form>
       </DialogContent>
     </Dialog>
