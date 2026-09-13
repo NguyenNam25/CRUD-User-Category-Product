@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 const JSON_SERVER_URL = "http://localhost:4000/users";
 
@@ -31,13 +32,13 @@ export async function PUT(
 
   const body = await request.json();
 
-  const authorization = request.headers.get("Authorization");
+  const token = (await cookies()).get("token")?.value;
 
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: authorization ?? "",
+      Authorization: token ? `Bearer ${token}` : "",
     },
     body: JSON.stringify(body),
   });

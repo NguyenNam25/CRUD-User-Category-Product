@@ -25,9 +25,9 @@
       "id": 4
     },
     {
-      "name": "test update",
-      "email": "ttt@gmail.com",
-      "password": "$2a$10$UIHoGCj3zc9OWS5VE2OsK.AER2905zmnhFNInZSZuCXTJbNuWSUuy",
+      "email": "update@gmail.com",
+      "password": "$2a$10$7t91ZLm/5SWzylCqLZRP5.q9YcjllKu6vW8LL7qWIR0OJ6YphTDQ6",
+      "fullname": "test update proxy",
       "id": 5
     }
   ],

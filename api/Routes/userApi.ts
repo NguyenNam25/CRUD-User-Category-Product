@@ -1,6 +1,6 @@
 import axios from "axios";
 import axiosClient from "../axiosConfiguration";
-import type { User, UserRegister } from "@/types/user";
+import type { User, UserRegister, UserUpdate } from "@/types/user";
 
 const userApi = { 
   getAllUsers: async (): Promise<User[]> => {
@@ -21,7 +21,7 @@ const userApi = {
       throw error;
     }
   },
-  updateUser: async (id: number, user: UserRegister): Promise<User> => {
+  updateUser: async (id: number, user: UserUpdate): Promise<User> => {
     try {
       const response = await axiosClient.put(`/users/${id}`, user);
       return response.data;

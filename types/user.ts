@@ -9,3 +9,12 @@ export interface UserRegister {
   email: string;
   password: string;
 }
+
+export interface UserUpdate {
+  fullname: string;
+  email: string;
+}
+
+export interface PasswordUpdate {
+  password: string;
+}

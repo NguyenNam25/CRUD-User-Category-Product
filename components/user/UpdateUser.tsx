@@ -7,14 +7,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { User, UserRegister } from "@/types/user";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { User, UserRegister, UserUpdate } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
-import UserField from "./UserField";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema } from "@/schemas/userSchema";
+import { updateUserSchema, userSchema } from "@/schemas/userSchema";
 
 export default function UpdateUser({
   data,
@@ -30,19 +32,18 @@ export default function UpdateUser({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UserRegister>({
+  } = useForm<UserUpdate>({
     defaultValues: {
       fullname: data.fullname,
-      email: data.email,
-      password: data.password,
+      email: data.email
     },
-    resolver: zodResolver(userSchema),
+    // resolver: zodResolver(updateUserSchema),
   });
 
   const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ id, user }: { id: number; user: UserRegister }) =>
+    mutationFn: ({ id, user }: { id: number; user: UserUpdate }) =>
       userApi.updateUser(id, user),
 
     onSuccess: () => {
@@ -54,13 +55,12 @@ export default function UpdateUser({
     },
   });
 
-  const onUpdate = (formdata: UserRegister) => {
+  const onUpdate = (formdata: UserUpdate) => {
     updateUserMutation.mutate({
       id: data.id,
       user: {
         fullname: formdata.fullname,
-        email: formdata.email,
-        password: formdata.password,
+        email: formdata.email
       },
     });
   };
@@ -73,7 +73,39 @@ export default function UpdateUser({
           <DialogDescription>Update information of user</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onUpdate)}>
-          <UserField register={register} errors={errors} reset={reset} />
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
+              <Input
+                {...register("fullname")}
+                id="fullname"
+                type="text"
+                placeholder="Enter Full Name"
+              />
+
+              {errors.fullname && (
+                <p className="text-red-500 text-sm">{errors.fullname.message}</p>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                {...register("email")}
+                id="email"
+                type="email"
+                placeholder="example@gmail.com"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </Field>
+            <div className="flex justify-end">
+              <Button type="button" onClick={() => reset()}>
+                Reset
+              </Button>
+              <Button type="submit">Submit</Button>
+            </div>
+          </FieldGroup>
         </form>
       </DialogContent>
     </Dialog>
