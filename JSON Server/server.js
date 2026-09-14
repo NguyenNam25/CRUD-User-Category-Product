@@ -14,7 +14,6 @@ app.use(jsonServer.defaults());
 app.use(jsonServer.bodyParser);
 
 app.put("/users/:id", (req, res, next) => {
-  // Nếu client CÓ gửi password (form đổi mật khẩu riêng) -> để auth xử lý bình thường
   if (req.body.password) {
     return next();
   }

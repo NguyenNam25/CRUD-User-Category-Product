@@ -1,8 +1,14 @@
 import axios from "axios";
 import axiosClient from "../axiosConfiguration";
-import type { User, UserRegister, UserUpdate } from "@/types/user";
+import type {
+  PasswordUpdate,
+  User,
+  UserRegister,
+  UserUpdate,
+} from "@/types/user";
+import ChangePassword from "@/components/user/ChangePassword";
 
-const userApi = { 
+const userApi = {
   getAllUsers: async (): Promise<User[]> => {
     const response = await axiosClient.get("/users");
     return response.data.map((user: any) => user);
@@ -39,6 +45,21 @@ const userApi = {
       throw error;
     }
   },
+  ChangePassword: async (
+    id: number,
+    user: PasswordUpdate, 
+  ): Promise<User> => {
+    try {
+      const response = await axiosClient.patch(`/users/${id}`, user);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Change password error:", error.response?.data); // 👈 xem message thật
+      }
+      throw error;
+    }
+  },
+
 };
 
 export default userApi;

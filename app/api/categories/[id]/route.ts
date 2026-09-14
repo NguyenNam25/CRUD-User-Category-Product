@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const JSON_SERVER_URL = "http://localhost:4000/categories";
@@ -8,11 +9,11 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const authorization = request.headers.get("Authorization");
+  const token = (await cookies()).get("token")?.value;
 
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     headers: {
-      Authorization: authorization ?? "",
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 
@@ -31,13 +32,13 @@ export async function PUT(
 
   const body = await request.json();
 
-  const authorization = request.headers.get("Authorization");
+  const token = (await cookies()).get("token")?.value;
 
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: authorization ?? "",
+      Authorization: token ? `Bearer ${token}` : "",
     },
     body: JSON.stringify(body),
   });
@@ -55,12 +56,12 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
-  const authorization = request.headers.get("Authorization");
+  const token = (await cookies()).get("token")?.value;
 
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "DELETE",
     headers: {
-      Authorization: authorization ?? "",
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 

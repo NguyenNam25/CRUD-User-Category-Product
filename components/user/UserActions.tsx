@@ -16,10 +16,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import userApi from "@/api/Routes/userApi";
 import { toast } from "sonner";
 import UpdateUser from "./UpdateUser";
+import ChangePassword from "./ChangePassword";
 
 export default function UserActions({ user }: { user: User }) {
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openChangePass, setOpenChangePass] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -55,6 +57,14 @@ export default function UserActions({ user }: { user: User }) {
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={() => {
+                setOpenChangePass(true);
+              }}
+            >
+              Change password
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
                 setOpenUpdate(true);
               }}
             >
@@ -71,6 +81,8 @@ export default function UserActions({ user }: { user: User }) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ChangePassword data={user} open = {openChangePass} onOpenChange = {setOpenChangePass}/>
 
       <UpdateUser data={user} open={openUpdate} onOpenChange={setOpenUpdate} />
 

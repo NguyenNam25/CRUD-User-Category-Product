@@ -23,14 +23,6 @@ export async function POST(request: Request) {
     });
   }
 
-  if (!data?.accessToken) {
-    console.error("Login proxy: thiếu accessToken trong phản hồi");
-    return NextResponse.json(
-      { message: "Đăng nhập thất bại, thiếu thông tin xác thực" },
-      { status: 502 }
-    );
-  }
-
   const res = NextResponse.json(
     {
       user: data.user,

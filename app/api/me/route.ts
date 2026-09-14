@@ -14,8 +14,6 @@ export async function GET() {
       );
     }
 
-    // JWT có dạng:
-    // header.payload.signature
     const payload = token.split(".")[1];
 
     if (!payload) {

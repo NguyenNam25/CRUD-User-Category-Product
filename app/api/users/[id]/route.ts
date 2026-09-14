@@ -50,18 +50,40 @@ export async function PUT(
   });
 }
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+  const body = await request.json();
+
+  const token = (await cookies()).get("token")?.value;
+
+  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const user = await response.json();
+  return NextResponse.json(user, { status: response.status });
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
-  const authorization = request.headers.get("Authorization");
+  const token = (await cookies()).get("token")?.value;
 
   const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
     method: "DELETE",
     headers: {
-      Authorization: authorization ?? "",
+      Authorization: token ? `Bearer ${token}` : "",
     },
   });
 

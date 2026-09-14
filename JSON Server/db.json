@@ -23,12 +23,6 @@
       "password": "$2a$10$L6h5n.aV83f.GECXuinOeOknP1zc0vmGtNcitzLg/ZpY8Nf3nXo66",
       "fullname": "test user",
       "id": 4
-    },
-    {
-      "email": "update@gmail.com",
-      "password": "$2a$10$7t91ZLm/5SWzylCqLZRP5.q9YcjllKu6vW8LL7qWIR0OJ6YphTDQ6",
-      "fullname": "test update proxy",
-      "id": 5
     }
   ],
   "categories": [
@@ -39,10 +33,6 @@
     {
       "id": 2,
       "name": "Gaming Gear"
-    },
-    {
-      "name": "test",
-      "id": 3
     }
   ],
   "products": [
@@ -66,13 +56,6 @@
       "price": 8990000,
       "categoryId": 2,
       "description": "Honoring two decades of ROG excellence, the limited-edition ROG Harpe II Extreme Edition 20 gaming mouse builds on the Harpe II Ace's heritage. Featuring gold-plated accents and cutting-edge technologies, it stands as a tribute to the ROG legacy of precision and fine craftsmanship."
-    },
-    {
-      "id": 5,
-      "name": "test user",
-      "price": 123454,
-      "categoryId": 2,
-      "description": "ggggg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

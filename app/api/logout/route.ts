@@ -13,8 +13,7 @@ export async function POST() {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
-      // Không chặn logout phía client dù backend lỗi
-      console.error("Logout: không revoke được token phía server", error);
+      console.error("Logout: ", error);
     }
   }
 
