@@ -14,22 +14,30 @@ export async function GET(
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    jwt.verify(token, process.env.JWT_SECRET!);
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
     const product = await prisma.product.findUnique({
       where: {
         id: Number(id),
       },
+      include: {
+        category: true,
+      },
     });
 
-    return NextResponse.json(product, {
-      status: 200,
-    });
+    return NextResponse.json(product, { status: 200 });
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { message: "Invalid or expired token" },
-      { status: 401 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -46,7 +54,15 @@ export async function PUT(
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    jwt.verify(token, process.env.JWT_SECRET!);
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
     const product = await prisma.product.update({
       where: {
@@ -59,14 +75,11 @@ export async function PUT(
         description: body.description,
       },
     });
-    return NextResponse.json(product, {
-      status: 202,
-    });
+    return NextResponse.json(product, { status: 200 });
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { message: "Invalid or expired token" },
-      { status: 401 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -82,7 +95,15 @@ export async function DELETE(
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    jwt.verify(token, process.env.JWT_SECRET!);
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
     await prisma.product.delete({
       where: {
@@ -95,10 +116,9 @@ export async function DELETE(
       { status: 200 },
     );
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { message: "Invalid or expired token" },
-      { status: 401 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

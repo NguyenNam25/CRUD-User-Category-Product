@@ -37,7 +37,7 @@ export default function UpdateUser({
       fullname: data.fullname,
       email: data.email
     },
-    // resolver: zodResolver(updateUserSchema),
+    resolver: zodResolver(updateUserSchema),
   });
 
   const queryClient = useQueryClient();

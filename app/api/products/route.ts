@@ -11,17 +11,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
-    const products = await prisma.product.findMany();
+    const products = await prisma.product.findMany({
+      include: {
+        category: true
+      }
+    });
 
-    return NextResponse.json(products);
+    return NextResponse.json(products, { status: 200 });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
-      { message: "Invalid or expired token" },
-      { status: 401 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }
@@ -34,7 +43,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET!);
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
     const body = await request.json();
 
@@ -56,19 +72,15 @@ export async function POST(request: Request) {
         name: body.name,
         price: body.price,
         categoryId: body.categoryId,
-        description: body.description
+        description: body.description,
       },
     });
 
-    return NextResponse.json(product, {
-      status: 201,
-    });
+    return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
-      { message: "Invalid or expired token" },
-      { status: 401 },
+      { message: "Internal server error" },
+      { status: 500 },
     );
   }
 }

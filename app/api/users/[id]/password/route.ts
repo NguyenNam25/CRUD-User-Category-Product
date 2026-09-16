@@ -15,7 +15,15 @@ export async function PATCH(
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    jwt.verify(token, process.env.JWT_SECRET!);
+
+    try {
+      jwt.verify(token, process.env.JWT_SECRET!);
+    } catch (error) {
+      return NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+    }
 
     const body = await request.json();
     const user = await prisma.user.findUnique({
@@ -56,8 +64,9 @@ export async function PATCH(
       { status: 200 },
     );
   } catch (error) {
-    console.error("UPDATE PASSWORD ERROR:", error);
-
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

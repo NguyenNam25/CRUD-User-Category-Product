@@ -16,16 +16,17 @@ const categoryApi = {
       const response = await axiosClient.post("/categories", category);
       return response.data;
     } catch (error) {
-      console.error("Error creating category:", category);
       throw error;
     }
   },
-  updateCategory: async (id: number, category: CategoryForm): Promise<Category> => {
+  updateCategory: async (
+    id: number,
+    category: CategoryForm,
+  ): Promise<Category> => {
     try {
       const response = await axiosClient.put(`/categories/${id}`, category);
       return response.data;
     } catch (error) {
-      console.error(`Error updating book with id ${id}:`, error);
       throw error;
     }
   },
@@ -34,7 +35,6 @@ const categoryApi = {
       const response = await axiosClient.delete(`/categories/${id}`);
       return response.data;
     } catch (error) {
-      console.error(`Error deleting book with id ${id}:`, error);
       throw error;
     }
   },

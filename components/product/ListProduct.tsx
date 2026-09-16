@@ -51,6 +51,9 @@ export default function ListProduct({ columns }: DataTableProps) {
       }
     }
   });
+
+  console.log(data)
+
   return (
     <div>
       <ListLayout>

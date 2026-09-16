@@ -10,7 +10,6 @@ const authApi = {
       });
       return response.data;
     } catch (error) {
-      console.error(`Error login`, error);
       throw error;
     }
   },
@@ -19,7 +18,6 @@ const authApi = {
       const response = await axiosClient.post("/register", user);
       return response.data;
     } catch (error) {
-      console.error("Error creating user:", user);
       throw error;
     }
   },
@@ -28,7 +26,6 @@ const authApi = {
       const response = await axiosClient.post("/logout");
       return response.data;
     } catch (error) {
-      console.error("Error logout: ", error);
       throw error;
     }
   },

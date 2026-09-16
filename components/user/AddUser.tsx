@@ -49,9 +49,7 @@ export default function AddUser() {
 
     onError: (error) => {
       if (axios.isAxiosError(error)) {
-        console.log(error.response?.data);
-
-        toast.error(error.response?.data || "Đăng ký thất bại");
+        toast.error(error.response?.data.message);
       }
     },
   });

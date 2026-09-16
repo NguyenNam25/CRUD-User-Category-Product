@@ -35,8 +35,6 @@ export async function GET() {
       user,
     });
   } catch (error) {
-    console.error("GET /api/me error:", error);
-
     return NextResponse.json({ user: null }, { status: 401 });
   }
 }

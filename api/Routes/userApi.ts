@@ -15,7 +15,6 @@ const userApi = {
   },
   getUserById: async (id: number): Promise<User> => {
     const response = await axiosClient.get(`/users/${id}`);
-
     return response.data;
   },
   createUser: async (user: User): Promise<User> => {
@@ -23,7 +22,6 @@ const userApi = {
       const response = await axiosClient.post("/users", user);
       return response.data;
     } catch (error) {
-      console.error("Error creating user:", user);
       throw error;
     }
   },
@@ -32,7 +30,6 @@ const userApi = {
       const response = await axiosClient.put(`/users/${id}`, user);
       return response.data;
     } catch (error) {
-      console.error(`Error updating book with id ${id}:`, error);
       throw error;
     }
   },
@@ -41,7 +38,6 @@ const userApi = {
       const response = await axiosClient.delete(`/users/${id}`);
       return response.data;
     } catch (error) {
-      console.error(`Error deleting user with id ${id}:`, error);
       throw error;
     }
   },
@@ -53,9 +49,6 @@ const userApi = {
       const response = await axiosClient.patch(`/users/${id}/password`, password);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Change password error:", error.response?.data);
-      }
       throw error;
     }
   },

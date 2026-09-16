@@ -28,6 +28,7 @@ import {
 } from "@/schemas/userSchema";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 type ChangePassForm = {
   currentPassword: string;
@@ -44,7 +45,8 @@ export default function ChangePassword({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
@@ -69,6 +71,12 @@ export default function ChangePassword({
       toast.success("Update successfully");
       onOpenChange(false);
     },
+
+    onError: (error) => {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+    }
   });
 
   const onUpdate = (formdata: ChangePassForm) => {
@@ -94,7 +102,7 @@ export default function ChangePassword({
               <FieldLabel htmlFor="password">Currnent Password</FieldLabel>
               <div className="relative">
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  type={showCurrentPassword ? "text" : "password"}
                   className="pr-10"
                   {...register("currentPassword")}
                   id="currentPassword"
@@ -102,10 +110,10 @@ export default function ChangePassword({
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
+                  onClick={() => setShowCurrentPassword((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  {showPassword ? (
+                  {showCurrentPassword ? (
                     <EyeOff className="h-4 w-4" />
                   ) : (
                     <Eye className="h-4 w-4" />
@@ -122,7 +130,7 @@ export default function ChangePassword({
               <FieldLabel htmlFor="password">New Password</FieldLabel>
               <div className="relative">
                 <Input
-                  type={showPassword ? "text" : "password"}
+                  type={showNewPassword ? "text" : "password"}
                   className="pr-10"
                   {...register("newPassword")}
                   id="password"
@@ -130,10 +138,10 @@ export default function ChangePassword({
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
+                  onClick={() => setShowNewPassword((prev) => !prev)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
-                  {showPassword ? (
+                  {showNewPassword ? (
                     <EyeOff className="h-4 w-4" />
                   ) : (
                     <Eye className="h-4 w-4" />
