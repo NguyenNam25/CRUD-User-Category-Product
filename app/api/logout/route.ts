@@ -1,31 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const JSON_SERVER_URL = "http://localhost:4000";
-
 export async function POST() {
-  const token = (await cookies()).get("token")?.value;
+  const cookieStore = await cookies();
 
-  if (token) {
-    try {
-      await fetch(`${JSON_SERVER_URL}/logout`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      console.error("Logout: ", error);
-    }
-  }
+  cookieStore.delete("token");
 
-  const res = NextResponse.json({ success: true });
-
-  res.cookies.set("token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
+  return NextResponse.json({
+    success: true,
   });
-
-  return res;
 }

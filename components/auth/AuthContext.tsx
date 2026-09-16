@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext} from "react";
+import { createContext, useContext } from "react";
 
 import type { User } from "@/types/user";
 import { useRouter } from "next/navigation";
@@ -20,23 +20,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const {data: currentUser, isLoading} = useQuery ({
+  const { data: currentUser, isLoading } = useQuery({
     queryKey: ["me"],
     queryFn: authApi.fetchMe,
-
-  })
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const login = (user: User) => {
-    queryClient.setQueryData(["me"],user)
+    queryClient.setQueryData(["me"], user);
   };
 
   const logout = async () => {
     try {
-      await authApi.logout()
+      await authApi.logout();
     } catch (error) {
       console.error("Logout error: ", error);
     } finally {
-      queryClient.setQueryData(["me"],null)
+      queryClient.setQueryData(["me"], null);
       router.push("/login");
     }
   };

@@ -1,94 +1,151 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-const JSON_SERVER_URL = "http://localhost:4000/users";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const token = (await cookies()).get("token")?.value;
 
-  const authorization = request.headers.get("Authorization");
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    headers: {
-      Authorization: authorization ?? "",
-    },
-  });
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(id),
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
 
-  const data = await response.json();
-
-  return NextResponse.json(data, {
-    status: response.status,
-  });
+    return NextResponse.json(user, {
+      status: 200,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const token = (await cookies()).get("token")?.value;
 
-  const body = await request.json();
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const token = (await cookies()).get("token")?.value;
-
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
-
-  const user = await response.json();
-
-  return NextResponse.json(user, {
-    status: response.status,
-  });
+    const user = await prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        fullname: body.fullname,
+        email: body.email,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
+    return NextResponse.json(user, {
+      status: 202,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-  const body = await request.json();
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const user = await response.json();
-  return NextResponse.json(user, { status: response.status });
+    const user = await prisma.user.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        fullname: body.fullname,
+        email: body.email,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
+    return NextResponse.json(user, { status: 203 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+    await prisma.user.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
-  return NextResponse.json(
-    { message: "User deleted successfully" },
-    { status: response.status },
-  );
+    return NextResponse.json(
+      { message: "User deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }

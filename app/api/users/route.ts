@@ -1,41 +1,87 @@
+import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000/users";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
-  const token = (await cookies()).get("token")?.value;
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-  const response = await fetch(JSON_SERVER_URL, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const users = await response.json();
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  return NextResponse.json(users, {
-    status: response.status,
-  });
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
+
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const response = await fetch(JSON_SERVER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const user = await response.json();
+    const body = await request.json();
 
-  return NextResponse.json(user, {
-    status: response.status,
-  });
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+      },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "Email already exists" },
+        { status: 400 },
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        fullname: body.fullname,
+        email: body.email,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
+
+    return NextResponse.json(user, {
+      status: 201,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }

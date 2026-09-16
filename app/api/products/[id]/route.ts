@@ -1,73 +1,104 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000/products";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+    const product = await prisma.product.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-  const data = await response.json();
-
-  return NextResponse.json(data, {
-    status: response.status,
-  });
+    return NextResponse.json(product, {
+      status: 200,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
-
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const token = (await cookies()).get("token")?.value;
 
-  const body = await request.json();
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const token = (await cookies()).get("token")?.value;
-
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
-
-  const category = await response.json();
-
-  return NextResponse.json(category, {
-    status: response.status,
-  });
+    const product = await prisma.product.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        name: body.name,
+        price: body.price,
+        categoryId: body.categoryId,
+        description: body.description,
+      },
+    });
+    return NextResponse.json(product, {
+      status: 202,
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
+  try {
+    const { id } = await params;
+    const token = (await cookies()).get("token")?.value;
 
-  const authorization = request.headers.get("Authorization");
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const response = await fetch(`${JSON_SERVER_URL}/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: authorization ?? "",
-    },
-  });
+    await prisma.product.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
-  return NextResponse.json(
-    { message: "Product deleted successfully" },
-    { status: response.status }
-  );
+    return NextResponse.json(
+      { message: "Product deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }

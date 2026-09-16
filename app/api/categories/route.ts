@@ -1,39 +1,71 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
-const JSON_SERVER_URL = "http://localhost:4000/categories";
+export async function GET(request: Request) {
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-export async function GET(request:Request) {
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const response = await fetch(JSON_SERVER_URL, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const categories = await response.json();
+    const categories = await prisma.category.findMany();
 
-  return NextResponse.json(categories);
+    return NextResponse.json(categories);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const response = await fetch(JSON_SERVER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const category = await response.json()
+    const body = await request.json();
 
-  return NextResponse.json(category, {
-    status: response.status,
-  });
+    const existingCategory = await prisma.category.findFirst({
+      where: {
+        name: body.name,
+      },
+    });
+
+    if (existingCategory) {
+      return NextResponse.json(
+        { message: "Category already exists" },
+        { status: 400 },
+      );
+    }
+
+    const category = await prisma.category.create({
+      data: {
+        name: body.name,
+      },
+    });
+
+    return NextResponse.json(category, {
+      status: 201,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }

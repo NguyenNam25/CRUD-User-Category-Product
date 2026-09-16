@@ -30,7 +30,8 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 type ChangePassForm = {
-  password: string;
+  currentPassword: string;
+  newPassword: string;
   confirmPassword: string;
 };
 
@@ -58,8 +59,8 @@ export default function ChangePassword({
   const queryClient = useQueryClient();
 
   const updatePassMutation = useMutation({
-    mutationFn: ({ id, user }: { id: number; user: PasswordUpdate }) =>
-      userApi.ChangePassword(id, user),
+    mutationFn: ({ id, password }: { id: number; password: PasswordUpdate }) =>
+      userApi.ChangePassword(id, password),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -71,15 +72,11 @@ export default function ChangePassword({
   });
 
   const onUpdate = (formdata: ChangePassForm) => {
-    //     if (formdata.password !== formdata.confirmPassword) {
-    //     toast.error("Mật khẩu xác nhận không khớp");
-    //     return; // dừng lại, không gọi API
-    //   }
     updatePassMutation.mutate({
       id: data.id,
-      user: {
-        email: data.email,
-        password: formdata.password,
+      password: {
+        currentPassword: formdata.currentPassword,
+        newPassword: formdata.newPassword,
       },
     });
   };
@@ -94,12 +91,40 @@ export default function ChangePassword({
         <form onSubmit={handleSubmit(onUpdate)}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password">Currnent Password</FieldLabel>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   className="pr-10"
-                  {...register("password")}
+                  {...register("currentPassword")}
+                  id="currentPassword"
+                  placeholder="Enter Current Password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {errors.currentPassword && (
+                <p className="text-red-500 text-sm">
+                  {errors.currentPassword.message}
+                </p>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="password">New Password</FieldLabel>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  className="pr-10"
+                  {...register("newPassword")}
                   id="password"
                   placeholder="Enter Password"
                 />
@@ -115,9 +140,9 @@ export default function ChangePassword({
                   )}
                 </button>
               </div>
-              {errors.password && (
+              {errors.newPassword && (
                 <p className="text-red-500 text-sm">
-                  {errors.password.message}
+                  {errors.newPassword.message}
                 </p>
               )}
             </Field>

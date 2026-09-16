@@ -1,59 +1,35 @@
 import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const token = (await cookies()).get("token")?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { user: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ user: null }, { status: 401 });
     }
 
-    const payload = token.split(".")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: number;
+      email: string;
+    };
 
-    if (!payload) {
-      return NextResponse.json(
-        { user: null },
-        { status: 401 }
-      );
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ user: null }, { status: 401 });
     }
-
-    const decodedPayload = JSON.parse(
-      Buffer.from(payload, "base64url").toString("utf-8")
-    );
-
-    const userId = decodedPayload.sub;
-
-    if (!userId) {
-      return NextResponse.json(
-        { user: null },
-        { status: 401 }
-      );
-    }
-
-    const response = await fetch(
-      `${JSON_SERVER_URL}/600/users/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        cache: "no-store",
-      }
-    );
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { user: null },
-        { status: response.status }
-      );
-    }
-
-    const user = await response.json();
 
     return NextResponse.json({
       user,
@@ -61,9 +37,6 @@ export async function GET() {
   } catch (error) {
     console.error("GET /api/me error:", error);
 
-    return NextResponse.json(
-      { user: null },
-      { status: 401 }
-    );
+    return NextResponse.json({ user: null }, { status: 401 });
   }
 }

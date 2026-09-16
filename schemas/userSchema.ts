@@ -21,10 +21,11 @@ export const updateUserSchema = z.object({ fullname, email });
 
 export const PasswordUpdateSchema = z
   .object({
-    password,
+    currentPassword: z.string({ message: "Please confirm your password" }),
+    newPassword: password,
     confirmPassword: z.string({ message: "Please confirm your password" }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Password do not match",
     path: ["confirmPassword"],
   });

@@ -47,14 +47,14 @@ const userApi = {
   },
   ChangePassword: async (
     id: number,
-    user: PasswordUpdate, 
+    password: PasswordUpdate, 
   ): Promise<User> => {
     try {
-      const response = await axiosClient.patch(`/users/${id}`, user);
+      const response = await axiosClient.patch(`/users/${id}/password`, password);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error("Change password error:", error.response?.data); // 👈 xem message thật
+        console.error("Change password error:", error.response?.data);
       }
       throw error;
     }

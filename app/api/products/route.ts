@@ -1,39 +1,74 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000/products";
+import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
-  const token = (await cookies()).get("token")?.value;
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-  const response = await fetch(JSON_SERVER_URL, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const products = await response.json();
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  return NextResponse.json(products);
+    const products = await prisma.product.findMany();
+
+    return NextResponse.json(products);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const token = (await cookies()).get("token")?.value;
 
-  const token = (await cookies()).get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-  const response = await fetch(JSON_SERVER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-    body: JSON.stringify(body),
-  });
+    jwt.verify(token, process.env.JWT_SECRET!);
 
-  const product = await response.json();
+    const body = await request.json();
 
-  return NextResponse.json(product, {
-    status: response.status,
-  });
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        name: body.name,
+      },
+    });
+
+    if (existingProduct) {
+      return NextResponse.json(
+        { message: "Product already exists" },
+        { status: 400 },
+      );
+    }
+
+    const product = await prisma.product.create({
+      data: {
+        name: body.name,
+        price: body.price,
+        categoryId: body.categoryId,
+        description: body.description
+      },
+    });
+
+    return NextResponse.json(product, {
+      status: 201,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "Invalid or expired token" },
+      { status: 401 },
+    );
+  }
 }

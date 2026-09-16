@@ -1,25 +1,48 @@
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const body = await request.json();
 
-  console.log("Register body:", body);
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: body.email,
+      },
+    });
 
-  const response = await fetch(`${JSON_SERVER_URL}/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "Email already exists" },
+        { status: 400 },
+      );
+    }
 
-  const data = await response.json();
+    const hashedPassword = await bcrypt.hash(body.password, 10);
 
-  console.log("JSON Server response:", data);
+    const user = await prisma.user.create({
+      data: {
+        fullname: body.fullname,
+        email: body.email,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        email: true,
+      },
+    });
 
-  return NextResponse.json(data, {
-    status: response.status,
-  });
+    return NextResponse.json(user, {
+      status: 201,
+    });
+  } catch (error) {
+    console.error("CREATE USER ERROR:", error);
+
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

@@ -1,38 +1,56 @@
+import  bcrypt  from 'bcrypt';
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-
-const JSON_SERVER_URL = "http://localhost:4000";
+import jwt from "jsonwebtoken";
 
 export async function POST(request: Request) {
   const body = await request.json();
 
-  const response = await fetch(`${JSON_SERVER_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const user = await prisma.user.findUnique({
+    where: {
+      email: body.email,
     },
-    body: JSON.stringify(body),
   });
 
-  const data = await response.json();
-
-  console.log("JSON Server response:", data);
-
-  if (!response.ok) {
-    return NextResponse.json(data, {
-      status: response.status,
-    });
+  if (!user) {
+    return NextResponse.json(
+      { message: "Email hoặc password không đúng" },
+      { status: 401 }
+    );
   }
 
-  const res = NextResponse.json(
+  const isPasswordCorrect = await bcrypt.compare(
+    body.password,
+    user.password
+  );
+
+  if (!isPasswordCorrect) {
+    return NextResponse.json(
+      { message: "Email hoặc password không đúng" },
+      { status: 401 }
+    );
+  }
+
+  const token = jwt.sign(
     {
-      user: data.user,
+      userId: user.id,
+      email: user.email,
     },
+    process.env.JWT_SECRET!,
     {
-      status: response.status,
+      expiresIn: "1d",
     }
   );
 
-  res.cookies.set("token", data.accessToken, {
+   const res = NextResponse.json({
+    user: {
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+    },
+  });
+
+  res.cookies.set("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
